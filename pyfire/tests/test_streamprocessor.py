@@ -53,3 +53,13 @@ class Test_contenthandler(PyfireTestCase):
         self.parser.feed(STREAMSTART)
         self.parser.feed(teststring)
         self.assertEqual(ET.tostring(self.lasttree), teststring)
+
+    def test_partial_treeparse(self):
+        teststring1 = """<iq id="yhc13a95" type="set"><bind xmlns="urn:ietf:params:xml:ns:xmpp-bi"""
+        teststring2 = """nd"><resource>balcony</resource></bind></iq>"""
+        self.parser.feed(STREAMSTART)
+        self.assertEqual(self.lasttree, None)
+        self.parser.feed(teststring1)
+        self.assertEqual(self.lasttree, None)
+        self.parser.feed(teststring2)
+        self.assertEqual(ET.tostring(self.lasttree), teststring1+teststring2)
