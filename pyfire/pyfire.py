@@ -12,7 +12,6 @@
 import SocketServer
 from xmpphandler import XMPPHandler
 
-
 # starts the XMPP listener...
 HOST, PORT = "0.0.0.0", 5222
 server = SocketServer.TCPServer((HOST, PORT), XMPPHandler)
