@@ -19,24 +19,29 @@ import streamprocessor
 
 class XMPPHandler(SocketServer.BaseRequestHandler):
 
-  def streamhandler(self, attr ):
+  def streamhandler(self, attrs ):
     """ handles an incomming stream start """
-    
+    print "Detected stream handlerattr..\n"
+    if attrs == {}:
+      self.running = 0;
+  
   def contenthandler(self, tree ):
     """ handles an incomming content tree """
+    print "Detected stream content data..\n"
     
   def handle(self):
     """ Starts the handling for a new connection """
     print "New connection from %s:%i" % self.client_address
 
     self.request.settimeout(0.1)
+    self.running = 1
 
     self.parser = sax.make_parser(['xml.sax.expatreader'])
     self.handler = streamprocessor.XMPPContentHandler( self.streamhandler, self.contenthandler )
     self.parser.setContentHandler( self.handler )
 
     try:
-      while( 1 ):
+      while( self.running ):
 	## main loop
 	try:
 	  data = self.request.recv( 2048 )
