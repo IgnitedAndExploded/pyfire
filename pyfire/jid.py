@@ -2,7 +2,7 @@
     pyfire.jid
     ~~~~~~~~~~
 
-    Handle JID parsing and interpretation as per XEP-0029
+    Handle JID parsing and interpretation as per RFC-6122
 
     :copyright: (c) 2011 by the pyfire Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
@@ -53,7 +53,7 @@ class JID(object):
             return self.domain
 
     def validate(self, raiseerror=False):
-        """Validate JID per XEP-0029"""
+        """Validate JID, either return a bool or raise ValueErrors"""
         if len(self.domain) < 1:
             if raiseerror:
                 raise ValueError("A domain is required")
