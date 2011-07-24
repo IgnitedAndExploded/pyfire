@@ -104,6 +104,7 @@ class tempAuthFailureException(saslException):
     def __init__(self):
         saslException.__init__(self, "temporary-auth-faulire")
 
+supportedMechs = {"PLAIN"}
 
 class Auth:
   

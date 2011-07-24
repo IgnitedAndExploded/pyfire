@@ -30,9 +30,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         else:
             # FIXME: set real from attribute based on config
             self.request.send("""<?xml version='1.0'?><stream:stream xmlns="%s" from="%s" id="%s" version="1.0" xml:lang="en" xmlns:stream="http://etherx.jabber.org/streams">""" % (attrs.getValue("xmlns"), attrs.getValue("to"), uuid.uuid4().hex ) )
-            # TODO: add real feature discovery and announce
-            if not self.authenticated:
-                self.request.send("""<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>""")
+            self.request.send( tostring(self.features) )
 
     def contenthandler(self, tree):
         """ handles an incomming content tree """
@@ -55,6 +53,16 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
     def handle(self):
         """ Starts the handling for a new connection """
         print "New connection from %s:%i" % self.client_address
+
+        # fetch supported mechanisms from auth module
+        self.features = Element("stream:features")
+        mechanisms = Element("mechanisms")
+        mechanisms.set("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
+        for mech in auth.supportedMechs:
+            elm = Element("mechanism")
+            elm.text = mech
+            mechanisms.append( elm )
+        self.features.append(mechanisms)
 
         self.request.settimeout(0.1)
         self.running = 1
