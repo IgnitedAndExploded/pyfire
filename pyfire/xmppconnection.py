@@ -43,8 +43,8 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         try:
             req.handle( tree )
             self.request.send("""<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>""")
-        except auth.authFailedException:
-            self.request.send("""<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>""")
+        except auth.saslException, e:
+            self.request.send( str(e) )
 
     def handle(self):
         """ Starts the handling for a new connection """
