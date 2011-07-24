@@ -28,7 +28,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
             self.running = 0;
         else:
             # FIXME: set real from attribute based on config
-            self.request.send("""<?xml version='1.0'?><stream:stream xmlns="%s" from="%s" id="%s" version="1.0" xmlns:stream="http://etherx.jabber.org/streams">""" % (attrs.getValue("xmlns"), attrs.getValue("to"), uuid.uuid4().hex ) )
+            self.request.send("""<?xml version='1.0'?><stream:stream xmlns="%s" from="%s" id="%s" version="1.0" xml:lang="en" xmlns:stream="http://etherx.jabber.org/streams">""" % (attrs.getValue("xmlns"), attrs.getValue("to"), uuid.uuid4().hex ) )
 
     def contenthandler(self, tree):
         """ handles an incomming content tree """
