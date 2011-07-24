@@ -17,6 +17,8 @@ from xml import sax
 import xml.etree.ElementTree as ET
 import streamprocessor
 
+import uuid
+
 class XMPPConnection(SocketServer.BaseRequestHandler):
 
     def streamhandler(self, attrs):
@@ -24,6 +26,9 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         print "Detected stream handlerattr..\n"
         if attrs == {}:
             self.running = 0;
+        else:
+            # FIXME: set real from attribute based on config
+            self.request.send("""<?xml version='1.0'?><stream:stream xmlns="%s" from="%s" id="%s" version="1.0" xmlns:stream="http://etherx.jabber.org/streams">""" % (attrs.getValue("xmlns"), attrs.getValue("to"), uuid.uuid4().hex ) )
 
     def contenthandler(self, tree):
         """ handles an incomming content tree """
@@ -51,6 +56,8 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
             except timeout:
                 pass
 
+        # close client stream
+        self.request.send("""</stream:stream>""")
         self.request.shutdown(SHUT_RDWR)
         self.request.close()
 
