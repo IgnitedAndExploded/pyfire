@@ -29,6 +29,8 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         else:
             # FIXME: set real from attribute based on config
             self.request.send("""<?xml version='1.0'?><stream:stream xmlns="%s" from="%s" id="%s" version="1.0" xml:lang="en" xmlns:stream="http://etherx.jabber.org/streams">""" % (attrs.getValue("xmlns"), attrs.getValue("to"), uuid.uuid4().hex ) )
+            # TODO: add real feature discovery and announce
+            self.request.send("""<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>""")
 
     def contenthandler(self, tree):
         """ handles an incomming content tree """
