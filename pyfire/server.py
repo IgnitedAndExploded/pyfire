@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.module
+    pyfire.server
     ~~~~~~~~~~~~~
 
     This module starts the main TCP listener for XMPP client communication so far.
@@ -12,7 +12,11 @@
 import SocketServer
 from xmpphandler import XMPPHandler
 
-# starts the XMPP listener...
-HOST, PORT = "0.0.0.0", 5222
-server = SocketServer.TCPServer((HOST, PORT), XMPPHandler)
-server.serve_forever()
+def main():
+    # starts the XMPP listener...
+    HOST, PORT = "0.0.0.0", 5222
+    server = SocketServer.TCPServer((HOST, PORT), XMPPHandler)
+    server.serve_forever()
+
+if __name__ == '__main__':
+    main()
