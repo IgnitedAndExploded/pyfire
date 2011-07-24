@@ -18,8 +18,8 @@ from xml.etree.ElementTree import Element, tostring
 import streamprocessor
 
 import uuid
-import auth
-import iq
+from pyfire import auth, iq
+
 
 class XMPPConnection(SocketServer.BaseRequestHandler):
 
