@@ -14,7 +14,7 @@ from socket import SHUT_RDWR, timeout
 from time import sleep
 
 from xml import sax
-import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import Element, tostring
 import streamprocessor
 
 import uuid
@@ -38,16 +38,19 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         """ handles an incomming content tree """
         print "Detected stream content data.."
 
-        if tree.tag == "auth" :
-            req = auth.Auth()
-
-        try:
-            req.handle( tree )
-            self.authenticated = 1
-            self.parser.reset()
-            self.request.send("""<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>""")
-        except auth.saslException, e:
-            self.request.send( str(e) )
+        if tree.tag == "auth":
+            try:
+                req = auth.Auth()
+                req.handle( tree )
+                self.authenticated = 1
+                self.parser.reset()
+                # Tell client, the auth has succeted
+                resp = Element("success")
+                resp.set("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
+                self.request.send( tostring(resp) )
+                
+            except auth.saslException, e:
+                self.request.send( str(e) )
 
     def handle(self):
         """ Starts the handling for a new connection """
