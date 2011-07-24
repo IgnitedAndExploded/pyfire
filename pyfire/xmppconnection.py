@@ -19,6 +19,7 @@ import streamprocessor
 
 import uuid
 import auth
+import iq
 
 class XMPPConnection(SocketServer.BaseRequestHandler):
 
@@ -42,6 +43,13 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
                 req.handle( tree )
                 self.authenticated = 1
                 self.parser.reset()
+                
+                # reset features to announce we have bind support
+                bind = Element( "bind" )
+                bind.set("xmlns", "urn:ietf:params:xml:ns:xmpp-bind")
+                self.features = Element( "stream:features" )
+                self.features.append( bind )
+                
                 # Tell client, the auth has succeted
                 resp = Element("success")
                 resp.set("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
@@ -49,6 +57,10 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
                 
             except auth.saslException, e:
                 self.request.send( str(e) )
+        elif tree.tag == "iq":
+            req = iq.Iq()
+            resp = req.handle( tree )
+            self.sendElement( resp )
 
     def handle(self):
         """ Starts the handling for a new connection """
