@@ -31,7 +31,8 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
             # FIXME: set real from attribute based on config
             self.request.send("""<?xml version='1.0'?><stream:stream xmlns="%s" from="%s" id="%s" version="1.0" xml:lang="en" xmlns:stream="http://etherx.jabber.org/streams">""" % (attrs.getValue("xmlns"), attrs.getValue("to"), uuid.uuid4().hex ) )
             # TODO: add real feature discovery and announce
-            self.request.send("""<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>""")
+            if not self.authenticated:
+                self.request.send("""<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>""")
 
     def contenthandler(self, tree):
         """ handles an incomming content tree """
@@ -42,6 +43,8 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
 
         try:
             req.handle( tree )
+            self.authenticated = 1
+            self.parser.reset()
             self.request.send("""<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>""")
         except auth.saslException, e:
             self.request.send( str(e) )
@@ -52,6 +55,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
 
         self.request.settimeout(0.1)
         self.running = 1
+        self.authenticated = 0
 
         self.parser = sax.make_parser(['xml.sax.expatreader'])
         self.handler = streamprocessor.XMPPContentHandler( self.streamhandler, self.contenthandler )
