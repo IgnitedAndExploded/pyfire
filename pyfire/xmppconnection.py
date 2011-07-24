@@ -30,7 +30,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         else:
             # FIXME: set real from attribute based on config
             self.request.send("""<?xml version='1.0'?><stream:stream xmlns="%s" from="%s" id="%s" version="1.0" xml:lang="en" xmlns:stream="http://etherx.jabber.org/streams">""" % (attrs.getValue("xmlns"), attrs.getValue("to"), uuid.uuid4().hex ) )
-            self.request.send( tostring(self.features) )
+            self.sendElement( self.features )
 
     def contenthandler(self, tree):
         """ handles an incomming content tree """
@@ -45,7 +45,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
                 # Tell client, the auth has succeted
                 resp = Element("success")
                 resp.set("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
-                self.request.send( tostring(resp) )
+                self.sendElement( resp )
                 
             except auth.saslException, e:
                 self.request.send( str(e) )
@@ -91,3 +91,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
     def finish(self):
         """ called upon socket shutdown either from client- or severside """
         print "Connection closed..."
+        
+    def sendElement(self, element):
+        """ Function to send out and Element() object """
+        self.request.send( tostring( element ) )
