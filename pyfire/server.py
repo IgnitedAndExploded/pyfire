@@ -12,13 +12,14 @@
 import SocketServer
 from xmppconnection import XMPPConnection
 
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    pass
+class XMPPTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    def __init__(self, sockaddr=("localhost", 5222), handler=XMPPConnection):
+        SocketServer.TCPServer.__init__(self, sockaddr, handler)
 
 def main():
     # starts the XMPP listener...
-    HOST, PORT = "0.0.0.0", 5222
-    server = ThreadedTCPServer((HOST, PORT), XMPPConnection)
+    server = XMPPTCPServer()
+    print "Listening on %s:%s" % server.server_address
     try:
         server.serve_forever()
     except KeyboardInterrupt:
