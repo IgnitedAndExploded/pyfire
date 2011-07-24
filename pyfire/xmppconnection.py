@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.module
+    pyfire.xmppconnection
     ~~~~~~~~~~~~~
 
     This module implements the basic XMPP communication server-side.
@@ -18,12 +18,13 @@ import xml.etree.ElementTree as ET
 import streamprocessor
 
 import uuid
+import auth
 
 class XMPPConnection(SocketServer.BaseRequestHandler):
 
     def streamhandler(self, attrs):
         """ handles an incomming stream start """
-        print "Detected stream handlerattr..\n"
+        print "Detected stream handlerattr.."
         if attrs == {}:
             self.running = 0;
         else:
@@ -34,7 +35,16 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
 
     def contenthandler(self, tree):
         """ handles an incomming content tree """
-        print "Detected stream content data..\n"
+        print "Detected stream content data.."
+
+        if tree.tag == "auth" :
+            req = auth.Auth()
+
+        try:
+            req.handle( tree )
+            self.request.send("""<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>""")
+        except auth.authFailedException:
+            self.request.send("""<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>""")
 
     def handle(self):
         """ Starts the handling for a new connection """
@@ -65,4 +75,4 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
 
     def finish(self):
         """ called upon socket shutdown either from client- or severside """
-        print "Connection closed...\n"
+        print "Connection closed..."
