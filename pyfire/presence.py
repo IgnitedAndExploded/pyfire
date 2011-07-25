@@ -16,3 +16,4 @@ class Presence():
 
     def handle(self, tree):
         """handler for resence requests, returns a response that should be sent back"""
+        return Element("presence")
