@@ -23,7 +23,8 @@ class Iq():
         res.set("type", "result")
         # dispatch to the handler for the given request query
         for req in list(tree):
-            res.append(handler[req.tag](self, req))
+            if req.tag in handler:
+                res.append(handler[req.tag](self, req))
         # return the result
         return res
 
