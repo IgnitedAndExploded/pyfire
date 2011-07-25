@@ -60,6 +60,6 @@ class Iq():
 
 handler = { 
       'bind': Iq.bind,
-      'session': Iq.session
+      'session': Iq.session,
       'query': Iq.query
       }
