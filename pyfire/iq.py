@@ -18,6 +18,7 @@ class Iq():
         """handler for iq requests, returns a response that should be sent back"""
 
         # prepare result header
+        # TODO: add from attribute
         res = Element("iq")
         res.set("id", tree.get("id"))
         res.set("type", "result")
@@ -48,7 +49,17 @@ class Iq():
         # TODO: create session
         return None
 
+    def query(self, request):
+        """Implements the query command"""
+        """
+            TODO: implement namespaces:
+                    jabber:iq:private -> XEP-0049
+                    jabber:iq:roster -> RFC 6121
+        """
+
+
 handler = { 
       'bind': Iq.bind,
       'session': Iq.session
+      'query': Iq.query
       }
