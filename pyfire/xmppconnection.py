@@ -18,7 +18,7 @@ from xml.etree.ElementTree import Element, tostring
 import streamprocessor
 
 import uuid
-import auth, iq
+import auth, iq, presence
 
 
 class XMPPConnection(SocketServer.BaseRequestHandler):
@@ -62,6 +62,10 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
                 self.request.send( str(e) )
         elif tree.tag == "iq":
             req = iq.Iq()
+            resp = req.handle( tree )
+            self.sendElement( resp )
+        elif tree.tag == "presence":
+            req = presence.Presence()
             resp = req.handle( tree )
             self.sendElement( resp )
 
