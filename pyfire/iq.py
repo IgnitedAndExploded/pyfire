@@ -24,7 +24,9 @@ class Iq():
         # dispatch to the handler for the given request query
         for req in list(tree):
             if req.tag in handler:
-                res.append(handler[req.tag](self, req))
+                data = handler[req.tag](self, req)
+                if data != None:
+                    res.append(data)
         # return the result
         return res
 
