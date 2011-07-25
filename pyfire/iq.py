@@ -16,17 +16,28 @@ class Iq():
 
     def handle(self, tree):
         """handler for iq requests, returns a response that should be sent back"""
-        if tree.find("bind") != None:
-            # return dummy bind response for now
-            res = tree
-            res.set("type", "result")
-            bind = res.find("bind")
-            jid = Element("jid")
-            bind.append(jid)
-            if bind.find("resource") != None:
-                jid.text = "test@localhost/"+bind.find("resource").text
-                bind.remove(bind.find("resource"))
-            else:
-                jid.text = "test@localhost/blahhhhh"
-            
+
+        # prepare result header
+        res = Element("iq")
+        res.set("id", tree.get("id"))
+        res.set("type", "result")
+        # dispatch to the handler for the given request query
+        for req in list(tree):
+            res.append(handler[req.tag](self, req))
+        # return the result
         return res
+
+    def bind(self, request):
+        """handles bind requests"""
+        # return dummy bind response for now
+        res = Element("bind")
+        res.set("xmlns", "urn:ietf:params:xml:ns:xmpp-bind")
+        jid = Element("jid")
+        res.append(jid)
+        if request.find("resource") != None:
+            jid.text = "test@localhost/"+request.find("resource").text
+        else:
+            jid.text = "test@localhost/blahhhhh"
+        return res
+
+handler = {'bind': Iq.bind}
