@@ -43,4 +43,12 @@ class Iq():
             jid.text = "test@localhost/blahhhhh"
         return res
 
-handler = {'bind': Iq.bind}
+    def session(self, request):
+        """Implements the session command specified in RFC3921 Chapter 3 """
+        # TODO: create session
+        return None
+
+handler = { 
+      'bind': Iq.bind,
+      'session': Iq.session
+      }
