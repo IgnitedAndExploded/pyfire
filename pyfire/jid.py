@@ -21,9 +21,12 @@ class JID(object):
 
     def __init__(self, jid):
         super(JID, self).__init__()
-        parts = jid.split('@', 1)
+
+        self.real_domain = False
+
+        parts = unicode(jid).split('@', 1)
         if len(parts) == 2:
-            self.local = unicode(parts[0])
+            self.local = parts[0]
             jid = parts[1]
         else:
             self.local = None
@@ -32,7 +35,7 @@ class JID(object):
         parts = jid.split('/', 1)
         if len(parts) == 2:
             self.domain = parts[0]
-            self.resource = unicode(parts[1])
+            self.resource = parts[1]
         else:
             self.domain = parts[0]
             self.resource = None
@@ -60,14 +63,21 @@ class JID(object):
             else:
                 return false
 
-        if not ((RE_DOMAIN.match(self.domain) or len(self.domain) > 255) or \
-                (len(self.domain.encode("utf-8")) > 1024) or \
-                util.is_valid_ipv4(self.domain) or \
-                util.is_valid_ipv6(self.domain)):
-            if raiseerror:
-                raise ValueError("malformed domain")
-            else:
-                return false
+        if self.domain.find(".") > 1:
+            if not ((RE_DOMAIN.match(self.domain) or len(self.domain) > 255) or \
+                    util.is_valid_ipv4(self.domain) or \
+                    util.is_valid_ipv6(self.domain)):
+                if raiseerror:
+                    raise ValueError("malformed domain")
+                else:
+                    return false
+            self.real_domain = True
+        else:
+            if len(self.domain.encode("utf-8")) > 1024:
+                if raiseerror:
+                    raise ValueError("malformed domain")
+                else:
+                    return false
 
         if self.local:
             if len(self.local.encode("utf-8")) > 1024:
