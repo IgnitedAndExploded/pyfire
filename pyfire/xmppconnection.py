@@ -43,7 +43,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
                 req.handle( tree )
                 self.authenticated = 1
                 self.parser.reset()
-                
+
                 # reset features to announce we have bind support
                 bind = Element( "bind" )
                 bind.set("xmlns", "urn:ietf:params:xml:ns:xmpp-bind")
@@ -52,12 +52,12 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
                 self.features = Element( "stream:features" )
                 self.features.append( bind )
                 self.features.append( session )
-                
+
                 # Tell client, the auth has succeted
                 resp = Element("success")
                 resp.set("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
                 self.sendElement( resp )
-                
+
             except auth.saslException, e:
                 self.request.send( str(e) )
         elif tree.tag == "iq":
@@ -110,7 +110,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
     def finish(self):
         """ called upon socket shutdown either from client- or severside """
         print "Connection closed..."
-        
+
     def sendElement(self, element):
         """ Function to send out and Element() object """
         self.request.send( tostring( element ) )

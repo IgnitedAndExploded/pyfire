@@ -75,7 +75,7 @@ class JID(object):
                     raise ValueError("local part too long")
                 else:
                     return false
-                
+
             for char in self.local:
                 number = ord(char)
                 if not ((number in [0x21, 0x3B, 0x3D, 0x3F]) or \
@@ -98,7 +98,7 @@ class JID(object):
                     raise ValueError("resource part too long")
                 else:
                     return false
-            
+
             for char in self.resource:
                 number = ord(char)
                 if not ((number >= 0x20 and number <= 0xD7FF) or \
