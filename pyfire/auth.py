@@ -38,13 +38,13 @@ class abortedException(saslException):
        has been aborted by the initiating entity.
     """
     def __init__(self):
-        saslException.__init__(self, "aborted")
+        super(abortedException, self).__init__("aborted")
 
 
 class accountDisabledException(saslException):
     """The account of the initiating entity has been temporarily disabled"""
     def __init__(self, message):
-        saslException.__init__(self, "acount-disabled")
+        super(accountDisabledException, self).__init__("acount-disabled")
         text = Element("text")
         text.set("xml:lang", "en")
         text.text = message
@@ -56,7 +56,7 @@ class credentialsExpiredException(saslException):
        credentials that have expired
     """
     def __init__(self):
-        saslException.__init__(self, "credentials-expired")
+        super(credentialsExpiredException, self).__init__("credentials-expired")
 
 
 class encryptionRequiredException(saslException):
@@ -65,7 +65,7 @@ class encryptionRequiredException(saslException):
        protected
     """
     def __init__(self):
-        saslException.__init__(self, "encryption-required")
+        super(encryptionRequiredException, self).__init__("encryption-required")
 
 
 class incorrectEncodingException(saslException):
@@ -73,7 +73,7 @@ class incorrectEncodingException(saslException):
        because the base 64 encoding is incorrect
     """
     def __init__(self):
-        saslException.__init__(self, "incorrect-encoding")
+        super(incorrectEncodingException, self).__init__("incorrect-encoding")
 
 
 class invalidAuthzidException(saslException):
@@ -82,7 +82,7 @@ class invalidAuthzidException(saslException):
        does not have permissions to authorize that ID
     """
     def __init__(self):
-        saslException.__init__(self, "invalid-authzid")
+        super(invalidAuthzidException, self).__init__("invalid-authzid")
 
 
 class invalidMechanismException(saslException):
@@ -90,13 +90,13 @@ class invalidMechanismException(saslException):
        mechanism that is not supported by the receiving entity
     """
     def __init__(self):
-        saslException.__init__(self, "invalid-machnism")
+        super(invalidMechanismException, self).__init__("invalid-machnism")
 
 
 class malformedRequestException():
     """The request is malformed"""
     def __init__(self):
-        saslException.__init__(self, "malformed-request")
+        super(malformedRequestException, self).__init__("malformed-request")
 
 
 class mechanismTooWeakException(saslException):
@@ -104,7 +104,7 @@ class mechanismTooWeakException(saslException):
        server policy permits for that initiating entity
     """
     def __init__(self):
-        saslException.__init__(self, "mechanism-too-weak")
+        super(mechanismTooWeakException, self).__init__("mechanism-too-weak")
 
 
 class notAuthorizedException(saslException):
@@ -114,7 +114,7 @@ class notAuthorizedException(saslException):
        disclose specific information about the cause of the failure
     """
     def __init__(self):
-        saslException.__init__(self, "not-authorized")
+        super(notAuthorizedException, self).__init__("not-authorized")
 
 
 class tempAuthFailureException(saslException):
@@ -123,7 +123,7 @@ class tempAuthFailureException(saslException):
        entity to try again later
     """
     def __init__(self):
-        saslException.__init__(self, "temporary-auth-faulire")
+        super(tempAuthFailureException, self).__init__("temporary-auth-faulire")
 
 
 supportedMechs = {"PLAIN"}
