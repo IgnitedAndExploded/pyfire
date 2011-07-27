@@ -18,7 +18,9 @@ from xml.etree.ElementTree import Element, tostring
 import streamprocessor
 
 import uuid
-import auth, iq, presence
+import auth
+import iq
+import presence
 
 
 class XMPPConnection(SocketServer.BaseRequestHandler):
@@ -27,11 +29,20 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         """ handles an incomming stream start """
         print "Detected stream handlerattr.."
         if attrs == {}:
-            self.running = 0;
+            self.running = 0
         else:
+            stream = Element("stream:stream")
+            stream.set("xmlns", attrs.getValue("xmlns"))
             # FIXME: set real from attribute based on config
-            self.request.send("""<?xml version='1.0'?><stream:stream xmlns="%s" from="%s" id="%s" version="1.0" xml:lang="en" xmlns:stream="http://etherx.jabber.org/streams">""" % (attrs.getValue("xmlns"), attrs.getValue("to"), uuid.uuid4().hex ) )
-            self.sendElement( self.features )
+            stream.set("from", attrs.getValue("to"))
+            stream.set("id", uuid.uuid4().hex)
+            stream.set("version", "1.0")
+            stream.set("xml:lang", "en")
+            stream.set("xmlns:stream", "http://etherx.jabber.org/streams")
+            start_stream = """<?xml version="1.0"?>""" + tostring(stream)
+            # Element has subitems but are added later to the stream
+            self.request.send(start_stream.replace("/>", ">"))
+            self.sendElement(self.features)
 
     def contenthandler(self, tree):
         """ handles an incomming content tree """
@@ -40,34 +51,34 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         if tree.tag == "auth":
             try:
                 req = auth.Auth()
-                req.handle( tree )
+                req.handle(tree)
                 self.authenticated = 1
                 self.parser.reset()
 
                 # reset features to announce we have bind support
-                bind = Element( "bind" )
+                bind = Element("bind")
                 bind.set("xmlns", "urn:ietf:params:xml:ns:xmpp-bind")
-                session = Element( "session" )
+                session = Element("session")
                 session.set("xmlns", "urn:ietf:params:xml:ns:xmpp-session")
-                self.features = Element( "stream:features" )
-                self.features.append( bind )
-                self.features.append( session )
+                self.features = Element("stream:features")
+                self.features.append(bind)
+                self.features.append(session)
 
                 # Tell client, the auth has succeted
                 resp = Element("success")
                 resp.set("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
-                self.sendElement( resp )
+                self.sendElement(resp)
 
             except auth.saslException, e:
-                self.request.send( str(e) )
+                self.request.send(str(e))
         elif tree.tag == "iq":
             req = iq.Iq()
-            resp = req.handle( tree )
-            self.sendElement( resp )
+            resp = req.handle(tree)
+            self.sendElement(resp)
         elif tree.tag == "presence":
             req = presence.Presence()
-            resp = req.handle( tree )
-            self.sendElement( resp )
+            resp = req.handle(tree)
+            self.sendElement(resp)
 
     def handle(self):
         """ Starts the handling for a new connection """
@@ -80,7 +91,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         for mech in auth.supportedMechs:
             elm = Element("mechanism")
             elm.text = mech
-            mechanisms.append( elm )
+            mechanisms.append(elm)
         self.features.append(mechanisms)
 
         self.request.settimeout(0.1)
@@ -88,17 +99,17 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         self.authenticated = 0
 
         self.parser = sax.make_parser(['xml.sax.expatreader'])
-        self.handler = streamprocessor.XMPPContentHandler( self.streamhandler, self.contenthandler )
-        self.parser.setContentHandler( self.handler )
+        self.handler = streamprocessor.XMPPContentHandler(self.streamhandler, self.contenthandler)
+        self.parser.setContentHandler(self.handler)
 
-        while( self.running ):
+        while(self.running):
             ## main loop
             try:
-                data = self.request.recv( 2048 )
-                # if not data received the socket seems to have closed so terminate the connection
+                data = self.request.recv(2048)
+                # if no data received, the socket seems to have closed so terminate the connection
                 if not data:
                     break
-                self.parser.feed( data )
+                self.parser.feed(data)
             except timeout:
                 pass
 
@@ -113,4 +124,4 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
 
     def sendElement(self, element):
         """ Function to send out and Element() object """
-        self.request.send( tostring( element ) )
+        self.request.send(tostring(element))
