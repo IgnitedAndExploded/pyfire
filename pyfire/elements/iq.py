@@ -28,7 +28,7 @@ class Iq(object):
             if req.tag in self.handler:
                 data = self.handler[req.tag](self, req)
                 if data != None:
-                    res.append(data)
+                    iq.append(data)
         # return the result
         return iq
 
