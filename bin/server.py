@@ -9,6 +9,13 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import sys
+import os.path
+# Add pyfire to namespace
+path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(path)
+
+
 import SocketServer
 from pyfire.xmppconnection import XMPPConnection
 from pyfire.auth.backends import DummyTrueValidator
