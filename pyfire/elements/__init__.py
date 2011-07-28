@@ -33,8 +33,10 @@ class TagHandler(object):
 
         try:
             if tree.tag == "auth":
-                self.server.auth_registry.process(tree)
-                self.parser.reset()
+                registry = self.server.auth_registry
+                handler = registry.request_handler(tree.get('xmlns'))
+                handler.process(tree)
+                self.connection.parser.reset()
                 self.authenticated = True
                 response_element = ET.Element("success")
                 response_element.set("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
