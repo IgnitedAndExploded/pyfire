@@ -36,14 +36,13 @@ class TestJID(PyfireTestCase):
     def test_bare_jid(self):
         jid = JID("user@host/res")
         self.assertEqual(jid.bare, "user@host")
-    
+
     def test_jid_compare(self):
         jid1 = JID("user1@host/res")
         jid2 = JID("user2@host/res")
         self.assertTrue(jid1 == jid1)
         self.assertFalse(jid1 == jid2)
-    
+
     def test_jid_ip(self):
         JID("user@127.0.0.1/res")
         JID("user@fe80::1/res")
-        
