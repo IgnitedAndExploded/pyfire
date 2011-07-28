@@ -13,7 +13,7 @@ from base64 import b64decode
 from xml.etree.ElementTree import Element, tostring
 
 
-class Presence():
+class Presence(object):
     """This Class handles <resence> XMPP frames"""
 
     def handle(self, tree):
