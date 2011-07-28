@@ -47,8 +47,10 @@ class Iq():
         return res
 
     def session(self, request):
-        """Implements the session command specified in RFC3921 Chapter 3 """
-        # TODO: create session
+        """ No-op as suggested in RFC6121 Appendix E.
+            Session establishment had been defined in RFC3921 Section 3
+            and marked depricated in RFC6121.
+        """
         return None
 
     def query(self, request):

@@ -58,8 +58,13 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
                 # reset features to announce we have bind support
                 bind = Element("bind")
                 bind.set("xmlns", "urn:ietf:params:xml:ns:xmpp-bind")
+
+                """ Session establishment is depricated in RFC6121 but Appendix E
+                    suggests to still advertise it as feature for compatibility.
+                """
                 session = Element("session")
                 session.set("xmlns", "urn:ietf:params:xml:ns:xmpp-session")
+
                 self.features = Element("stream:features")
                 self.features.append(bind)
                 self.features.append(session)
