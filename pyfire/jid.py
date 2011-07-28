@@ -17,7 +17,7 @@ RE_DOMAIN = re.compile("^(([a-zA-Z0-9]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A
 class JID(object):
     """Jabber ID"""
 
-    __slots__ = ('local', 'domain', 'resource')
+    __slots__ = ('local', 'domain', 'resource', 'real_domain')
 
     def __init__(self, jid):
         super(JID, self).__init__()
