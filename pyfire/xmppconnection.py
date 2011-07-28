@@ -15,7 +15,10 @@ from xml.sax import make_parser as sax_make_parser
 import xml.etree.ElementTree as ET
 
 from pyfire import streamprocessor
+from pyfire.logger import Logger
 from pyfire.elements import TagHandler
+
+log = Logger("XMPPConnection")
 
 class XMPPConnection(SocketServer.BaseRequestHandler):
 
@@ -33,6 +36,7 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
         # TCP loop
         self.request.settimeout(0.1)
         self.running = True
+        log.debug("Entering Stream Loop")
         while(self.running):
             try:
                 data = self.request.recv(2048)
@@ -40,16 +44,19 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
                 # so terminate the connection
                 if not data:
                     break
+                log.debug("Received data from client:" + data)
                 self.parser.feed(data)
             except socket.timeout:
                 pass
 
         # close client stream
+        log.debug("Sending stream end")
         self.request.send("</stream:stream>")
         try:
             self.request.shutdown(socket.SHUT_RDWR)
         except socket.error:
             pass
+        log.debug("Shutting request down")
         self.request.close()
 
     def stop_connection(self):
@@ -57,9 +64,11 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
 
     def send_string(self, string):
         """Send a string to client"""
+        log.debug("Sending string to client:" + string)
         self.request.send(string)
 
     def send_element(self, element):
         """Serialize and send an ET Element"""
-
-        self.request.send(ET.tostring(element))
+        string = ET.tostring(element)
+        log.debug("Sending element to client:" + string)
+        self.request.send(string)
