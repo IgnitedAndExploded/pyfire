@@ -34,12 +34,13 @@ class TagHandler(object):
         try:
             if tree.tag == "auth":
                 registry = self.server.auth_registry
-                handler = registry.request_handler(tree.get('xmlns'))
+                namespace = tree.get('xmlns')
+                handler = registry.request_handler(namespace)
                 handler.process(tree)
                 self.connection.parser.reset()
                 self.authenticated = True
                 response_element = ET.Element("success")
-                response_element.set("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
+                response_element.set("xmlns", namespace)
             elif tree.tag == "iq":
                 response_element = self.iq.handle(tree)
             elif tree.tag == "presence":
