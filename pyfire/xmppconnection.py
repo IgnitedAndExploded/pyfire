@@ -52,7 +52,6 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
             try:
                 req = auth.Auth()
                 req.handle(tree)
-                self.authenticated = 1
                 self.parser.reset()
 
                 # reset features to announce we have bind support
@@ -101,7 +100,6 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
 
         self.request.settimeout(0.1)
         self.running = 1
-        self.authenticated = 0
 
         self.parser = sax.make_parser(['xml.sax.expatreader'])
         self.handler = streamprocessor.XMPPContentHandler(self.streamhandler, self.contenthandler)
