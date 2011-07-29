@@ -29,6 +29,9 @@ class Iq(object):
                 data = self.handler[req.tag](self, req)
                 if data != None:
                     iq.append(data)
+            else:
+                for elem in self.failure(req):
+                    iq.append(elem)
         # return the result
         return iq
 
@@ -58,6 +61,13 @@ class Iq(object):
                     jabber:iq:private -> XEP-0049
                     jabber:iq:roster -> RFC 6121
         """
+
+    def failure(self, requested_service):
+        error = ET.Element("error")
+        error.set("type", "cancel")
+        service = ET.SubElement(error, "service-unavailable")
+        service.set("xmlns", "urn:ietf:params:xml:ns:xmpp-stanzas")
+        return [requested_service, error]
 
     handler = {
       'bind': bind,
