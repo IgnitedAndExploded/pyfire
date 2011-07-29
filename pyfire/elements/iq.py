@@ -32,6 +32,7 @@ class Iq(object):
             else:
                 for elem in self.failure(req):
                     iq.append(elem)
+                iq.set("type", "error")
         # return the result
         return iq
 
