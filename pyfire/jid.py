@@ -12,7 +12,10 @@ import re
 
 from pyfire import util
 
-RE_DOMAIN = re.compile("^(([a-zA-Z0-9]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$")
+RE_DOMAIN = re.compile("^(([a-zA-Z0-9]|[a-zA-Z][a-zA-Z0-9\-]" +
+                       "*[a-zA-Z0-9])\.)*([A-Za-z]|" +
+                       "[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$")
+
 
 class JID(object):
     """Jabber ID"""
@@ -64,7 +67,8 @@ class JID(object):
                 return false
 
         if self.domain.find(".") > 1:
-            if not ((RE_DOMAIN.match(self.domain) or len(self.domain) > 255) or \
+            if not ((RE_DOMAIN.match(self.domain) or \
+                     len(self.domain) > 255) or \
                     util.is_valid_ipv4(self.domain) or \
                     util.is_valid_ipv6(self.domain)):
                 if raiseerror:

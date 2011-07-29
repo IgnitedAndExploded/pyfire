@@ -18,7 +18,8 @@ from pyfire import streamprocessor
 
 STREAMSTART = """<?xml version='1.0'?><stream:stream xmlns="jabber:client" to="localhost" version="1.0" xmlns:stream="http://etherx.jabber.org/streams">"""
 
-class Test_contenthandler(PyfireTestCase):
+
+class TestContentHandler(PyfireTestCase):
 
     def fakestreamhandler(self, attrs):
         self.lastattrs = attrs
@@ -62,4 +63,4 @@ class Test_contenthandler(PyfireTestCase):
         self.parser.feed(teststring1)
         self.assertEqual(self.lasttree, None)
         self.parser.feed(teststring2)
-        self.assertEqual(ET.tostring(self.lasttree), teststring1+teststring2)
+        self.assertEqual(ET.tostring(self.lasttree), teststring1 + teststring2)

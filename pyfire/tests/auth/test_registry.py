@@ -19,6 +19,7 @@ from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry, \
 from pyfire.auth.backends import DummyTrueValidator, DummyFalseValidator, \
                                  InvalidAuthenticationError
 
+
 class DummyTestValidator(DummyTrueValidator):
     def __init__(self):
         super(DummyTrueValidator, self).__init__()

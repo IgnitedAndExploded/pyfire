@@ -20,6 +20,7 @@ from pyfire.elements import TagHandler
 
 log = Logger("XMPPConnection")
 
+
 class XMPPConnection(SocketServer.BaseRequestHandler):
 
     def handle(self):

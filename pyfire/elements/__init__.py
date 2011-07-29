@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 
 from pyfire.elements import iq, presence
 
+
 class TagHandler(object):
 
     def __init__(self, connection):

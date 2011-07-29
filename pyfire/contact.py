@@ -10,6 +10,7 @@
 
 from xml.etree.ElementTree import Element
 
+
 class Contact(object):
     """Jabber Contact, aka roster item"""
 
@@ -30,6 +31,7 @@ class Contact(object):
 
     def to_element(self):
         """Returns the Contact as etree.ElementTree.Element object"""
+
         element = Element("item")
         if not self.approved == None:
             element.set("approved", self.approved)

@@ -13,6 +13,7 @@ from pyfire.tests import PyfireTestCase
 
 from pyfire.jid import JID
 
+
 class TestJID(PyfireTestCase):
 
     def test_parse_full_jid(self):

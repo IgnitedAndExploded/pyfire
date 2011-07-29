@@ -37,7 +37,8 @@ class DummyTrueValidator(CredentialValidator):
     """Always returns true"""
 
     def __init__(self):
-        warnings.warn("Do not use this validator in production", RuntimeWarning)
+        warnings.warn("Do not use this validator in production",
+                      RuntimeWarning)
         super(DummyTrueValidator, self).__init__()
 
     def validate_userpass(self, username, password):

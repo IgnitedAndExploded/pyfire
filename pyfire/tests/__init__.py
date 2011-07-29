@@ -11,6 +11,7 @@
 
 import unittest
 
+
 class PyfireTestCase(unittest.TestCase):
     """All our unittests are based on this class"""
     pass

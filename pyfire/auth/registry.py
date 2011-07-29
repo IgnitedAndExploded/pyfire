@@ -58,8 +58,8 @@ class AuthHandlerRegistry(object):
     def supported_namespaces(self):
         """Lists supported namespaces"""
 
-        return frozenset([handler.namespace for handler in self.known_handlers.values()])
-
+        return frozenset([handler.namespace for handler
+                          in self.known_handlers.values()])
 
 
 class ValidationRegistry(object):

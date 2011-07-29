@@ -3,7 +3,8 @@
     pyfire.presence
     ~~~~~~~~~~~~~
 
-    This module handles XMPP presence packets as defined in RFC 6121 Section 4.7
+    This module handles XMPP presence packets
+    as defined in RFC 6121 Section 4.7
 
     :copyright: (c) 2011 by the pyfire Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
@@ -17,5 +18,6 @@ class Presence(object):
     """This Class handles <resence> XMPP frames"""
 
     def handle(self, tree):
-        """handler for resence requests, returns a response that should be sent back"""
+        """handler for resence requests,
+           returns a response that should be sent back"""
         return Element("presence")

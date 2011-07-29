@@ -13,9 +13,11 @@ from collections import OrderedDict
 import xml.etree.ElementTree as ET
 from xml.sax.handler import ContentHandler
 
+
 class UnknownStreamException(Exception):
     """Stream starts with something other than XMPP control"""
     pass
+
 
 class XMPPContentHandler(ContentHandler):
     """Process content from parser, tracking parsing depths
@@ -64,7 +66,7 @@ class XMPPContentHandler(ContentHandler):
 
     def makedictfromattrs(self, attrs):
         """Attributes from sax are not dictionaries. ElementTree doesn't
-           copy automatically, so do it here and convert to ordered Dictionary."""
+           copy automatically, so do it here and convert to ordered dict."""
         retdict = OrderedDict()
         for k, v in attrs.items():
             retdict[k] = v
