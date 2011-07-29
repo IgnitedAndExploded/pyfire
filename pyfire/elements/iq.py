@@ -64,9 +64,18 @@ class Iq(object):
 
         response = ET.Element("query")
         if request.get("xmlns") == """http://jabber.org/protocol/disco#info""":
-            # Return server features
+            features = [
+                'urn:xmpp:ping', # XEP-0199
+            ]
+
             response.set("xmlns", """http://jabber.org/protocol/disco#info""")
-            return
+            for feature in features:
+                feat_elem = ET.SubElement(response, "feature")
+                feat_elem.set("var", feature)
+            return response
+
+    def ping(self, request):
+        """A No-op for XEP-0199"""
 
     def failure(self, requested_service):
         error = ET.Element("error")
@@ -78,5 +87,6 @@ class Iq(object):
     handler = {
       'bind': bind,
       'session': session,
-      'query': query
+      'query': query,
+      'ping': ping
     }

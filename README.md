@@ -11,4 +11,5 @@ At the moment you just need Python 2.6 with ElementTree 1.3 or Python 2.7
 Implemented RFC and XEP
 =======================
 
-RFC-6122: (XMPP): Address Format (March 2011)
+RFC-6122: XMPP Address Format (Version March 2011)
+XEP-0199: XMPP Ping (Version 2.0)
