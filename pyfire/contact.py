@@ -8,7 +8,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from xml.etree.ElementTree import Element
+import xml.etree.ElementTree as ET
 
 
 class Contact(object):
@@ -32,7 +32,7 @@ class Contact(object):
     def to_element(self):
         """Returns the Contact as etree.ElementTree.Element object"""
 
-        element = Element("item")
+        element = ET.Element("item")
         if not self.approved == None:
             element.set("approved", self.approved)
         if not self.ask == None:
@@ -43,7 +43,7 @@ class Contact(object):
         if not self.subscription == None:
             element.set("subscription", self.subscription)
         for group in self.group:
-            group_element = Element("group")
+            group_element = ET.Element("group")
             group_element.text = group
             element.append(group_element)
         return element
