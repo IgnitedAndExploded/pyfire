@@ -62,6 +62,12 @@ class Iq(object):
                     jabber:iq:roster -> RFC 6121
         """
 
+        response = ET.Element("query")
+        if request.get("xmlns") == """http://jabber.org/protocol/disco#info""":
+            # Return server features
+            response.set("xmlns", """http://jabber.org/protocol/disco#info""")
+            return
+
     def failure(self, requested_service):
         error = ET.Element("error")
         error.set("type", "cancel")
