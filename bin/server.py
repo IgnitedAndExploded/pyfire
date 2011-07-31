@@ -20,10 +20,13 @@ import SocketServer
 from pyfire.xmppconnection import XMPPConnection
 from pyfire.auth.backends import DummyTrueValidator
 from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry
-
+import pyfire.configuration as config
 
 class XMPPTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    def __init__(self, sockaddr=("localhost", 5222), handler=XMPPConnection):
+    def __init__(self,
+                 sockaddr=(config.get('listeners', 'ip'),
+                           config.getint('listeners', 'clientport')),
+                 handler=XMPPConnection):
         SocketServer.TCPServer.__init__(self, sockaddr, handler)
 
         # init auth backends
