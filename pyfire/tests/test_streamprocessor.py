@@ -5,7 +5,7 @@
 
     Unittests for streamprocessor
 
-    :copyright: (c) 2011 by the pyfire Team, see AUTHORS for more details.
+    :copyright: 2011 by the pyfire Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 

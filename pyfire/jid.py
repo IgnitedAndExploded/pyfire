@@ -4,7 +4,7 @@
 
     Handle JID parsing and interpretation as per RFC-6122
 
-    :copyright: (c) 2011 by the pyfire Team, see AUTHORS for more details.
+    :copyright: 2011 by the pyfire Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 
@@ -59,7 +59,8 @@ class JID(object):
             return self.domain
 
     def validate(self, raiseerror=False):
-        """Validate JID, either return a bool or raise ValueErrors"""
+        """Validate JID, either return a bool or raise :py:exc:`ValueErrors`"""
+
         if len(self.domain) < 1:
             if raiseerror:
                 raise ValueError("A domain is required")
