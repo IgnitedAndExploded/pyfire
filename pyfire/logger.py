@@ -9,8 +9,28 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import warnings
+import pyfire.configuration as config
+
+
 try:
-    from logbook import Logger
+    import logbook
+    class Logger(logbook.Logger):
+        def __init__(self, name):
+            try:
+                level = config.get('logging', name.replace('.','_')).upper()
+            except config.NoOptionError:
+                level = ''
+
+            if not level:
+                level = config.get('logging', 'global_level').upper()
+
+            if level not in frozenset(['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET']):
+                warnings.warn("No such loglevel %s" % level, RuntimeWarning)
+                level = 'ERROR'
+
+            super(Logger, self).__init__(name, getattr(logbook, level))
+
 except ImportError:
     class Logger(object):
         def __init__(self, name, level=0):
