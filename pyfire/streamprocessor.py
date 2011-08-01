@@ -9,7 +9,11 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from sqlalchemy.util import OrderedDict
+
 import xml.etree.ElementTree as ET
 from xml.sax.handler import ContentHandler
 
