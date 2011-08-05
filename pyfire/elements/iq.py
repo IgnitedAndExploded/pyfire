@@ -94,6 +94,11 @@ class Iq(object):
     def ping(self, request):
         """A No-op for XEP-0199"""
 
+    def vcard(self, request):
+        """Returns the users vCard as specified by XEP-0054"""
+        """ TODO: Stub - Implement real vCard storage """
+        return ET.Element("vCard")
+
     def failure(self, requested_service):
         error = ET.Element("error")
         error.set("type", "cancel")
@@ -105,5 +110,6 @@ class Iq(object):
       'bind': bind,
       'session': session,
       'query': query,
-      'ping': ping
+      'ping': ping,
+      'vCard': vcard
     }
