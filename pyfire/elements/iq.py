@@ -79,6 +79,10 @@ class Iq(object):
             contact.subscription = "both"
             contact.approved = "true"
             response.append(contact.to_element())
+            contact = Contact("test2@localhost")
+            contact.approved = "true"
+            contact.subscription = "both"
+            response.append(contact.to_element())
         return response
 
     def ping(self, request):
