@@ -83,6 +83,12 @@ class Iq(object):
             contact.approved = "true"
             contact.subscription = "both"
             response.append(contact.to_element())
+        elif request.get("xmlns") == """jabber:iq:last""":
+            """XEP-0012"""
+            response.set("xmlns", "jabber.iq.last")
+            """ TODO: set real last activity of requested contact """
+            response.set("seconds", "0")
+
         return response
 
     def ping(self, request):
