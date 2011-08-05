@@ -10,7 +10,7 @@
 """
 
 import xml.etree.ElementTree as ET
-
+from pyfire.contact import Contact
 
 class Iq(object):
     """This Class handles <iq> XMPP frames"""
@@ -60,7 +60,6 @@ class Iq(object):
         """
             TODO: implement namespaces:
                     jabber:iq:private -> XEP-0049
-                    jabber:iq:roster -> RFC 6121
         """
 
         response = ET.Element("query")
@@ -73,7 +72,14 @@ class Iq(object):
             for feature in features:
                 feat_elem = ET.SubElement(response, "feature")
                 feat_elem.set("var", feature)
-            return response
+        elif request.get("xmlns") == """jabber:iq:roster""":
+            response.set("xmlns", """jabber:iq:roster""")
+            """ TODO: return real roster """
+            contact = Contact("test@localhost")
+            contact.subscription = "both"
+            contact.approved = "true"
+            response.append(contact.to_element())
+        return response
 
     def ping(self, request):
         """A No-op for XEP-0199"""
