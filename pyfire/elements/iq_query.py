@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-pyfire.iq
+pyfire.iq_query
 ~~~~~~~~~~~~~
 
-This module handles XMPP iq packets
+This module handles XMPP iq-query sub frames
 
 :copyright: 2011 by the pyfire Team, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 from pyfire.contact import Contact
 
 class Iq_query(object):
-    """Handles all iq query xmpp frames"""
+    """Handles all iq-query xmpp frames"""
 
     __slots__ = ('handler','request','response')
 
