@@ -52,7 +52,7 @@ class Iq_query(object):
             'urn:xmpp:ping',  # XEP-0199
         ]
 
-        response.set("xmlns", """http://jabber.org/protocol/disco#info""")
+        self.response.set("xmlns", """http://jabber.org/protocol/disco#info""")
         for feature in features:
             feat_elem = ET.SubElement(self.response, "feature")
             feat_elem.set("var", feature)
