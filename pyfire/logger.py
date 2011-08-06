@@ -12,13 +12,13 @@
 import warnings
 import pyfire.configuration as config
 
-
 try:
     import logbook
+
     class Logger(logbook.Logger):
         def __init__(self, name):
             try:
-                level = config.get('logging', name.replace('.','_')).upper()
+                level = config.get('logging', name.replace('.', '_')).upper()
             except config.NoOptionError:
                 level = ''
 

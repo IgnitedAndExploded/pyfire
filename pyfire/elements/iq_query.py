@@ -12,10 +12,11 @@ This module handles XMPP iq-query sub frames
 import xml.etree.ElementTree as ET
 from pyfire.contact import Contact
 
+
 class Iq_query(object):
     """Handles all iq-query xmpp frames"""
 
-    __slots__ = ('handler','request','response')
+    __slots__ = ('handler', 'request', 'response')
 
     def handle(self, request):
         self.request = request
@@ -46,8 +47,9 @@ class Iq_query(object):
 
     def disco_info(self):
         """XEP-0030"""
+
         features = [
-            'urn:xmpp:ping', # XEP-0199
+            'urn:xmpp:ping',  # XEP-0199
         ]
 
         response.set("xmlns", """http://jabber.org/protocol/disco#info""")
@@ -55,10 +57,8 @@ class Iq_query(object):
             feat_elem = ET.SubElement(self.response, "feature")
             feat_elem.set("var", feature)
 
-    """
-        TODO: implement namespaces:
-        jabber:iq:private -> XEP-0049
-    """
+    # TODO: implement namespaces:
+    #       jabber:iq:private -> XEP-0049
     handler = {
         # 'Handled namespace': handler
         'jabber:iq:roster': roster,

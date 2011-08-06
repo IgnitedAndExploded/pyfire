@@ -12,6 +12,7 @@
 import xml.etree.ElementTree as ET
 from pyfire.elements import iq_query
 
+
 class Iq(object):
     """This Class handles <iq> XMPP frames"""
 

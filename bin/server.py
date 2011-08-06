@@ -22,6 +22,7 @@ from pyfire.auth.backends import DummyTrueValidator
 from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry
 import pyfire.configuration as config
 
+
 class XMPPTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     def __init__(self,
                  sockaddr=(config.get('listeners', 'ip'),
