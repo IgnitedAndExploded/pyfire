@@ -65,7 +65,7 @@ class JID(object):
             if raiseerror:
                 raise ValueError("A domain is required")
             else:
-                return false
+                return False
 
         if self.domain.find(".") > 1:
             if not ((RE_DOMAIN.match(self.domain) or \
@@ -75,21 +75,21 @@ class JID(object):
                 if raiseerror:
                     raise ValueError("malformed domain")
                 else:
-                    return false
+                    return False
             self.real_domain = True
         else:
             if len(self.domain.encode("utf-8")) > 1024:
                 if raiseerror:
                     raise ValueError("malformed domain")
                 else:
-                    return false
+                    return False
 
         if self.local:
             if len(self.local.encode("utf-8")) > 1024:
                 if raiseerror:
                     raise ValueError("local part too long")
                 else:
-                    return false
+                    return False
 
             for char in self.local:
                 number = ord(char)
@@ -105,14 +105,14 @@ class JID(object):
                     if raiseerror:
                         raise ValueError("malformed local part")
                     else:
-                        return false
+                        return False
 
         if self.resource:
             if len(self.resource.encode("utf-8")) > 1024:
                 if raiseerror:
                     raise ValueError("resource part too long")
                 else:
-                    return false
+                    return False
 
             for char in self.resource:
                 number = ord(char)
@@ -122,10 +122,10 @@ class JID(object):
                     if raiseerror:
                         raise ValueError("malformed resource")
                     else:
-                        return false
+                        return False
 
         if not raiseerror:
-            return true
+            return True
 
     @property
     def bare(self):
