@@ -13,6 +13,7 @@ import uuid
 import xml.etree.ElementTree as ET
 
 from pyfire.elements import iq, presence
+from pyfire.streamprocessor import StreamContentException
 
 
 class TagHandler(object):
@@ -47,7 +48,7 @@ class TagHandler(object):
             elif tree.tag == "presence":
                 response_element = self.presence.handle(tree)
             self.send_element(response_element)
-        except Exception, e:
+        except StreamContentException, e:
             self.send_string(unicode(e))
 
     def add_auth_options(self, feature_element):

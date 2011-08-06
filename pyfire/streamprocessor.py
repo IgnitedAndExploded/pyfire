@@ -18,7 +18,12 @@ import xml.etree.ElementTree as ET
 from xml.sax.handler import ContentHandler
 
 
-class UnknownStreamException(Exception):
+class StreamContentException(Exception):
+    """Base class for all stream related exceptions we can send back to the client"""
+    pass
+
+
+class UnknownStreamException(StreamContentException):
     """Stream starts with something other than XMPP control"""
     pass
 
