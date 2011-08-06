@@ -10,7 +10,7 @@
 """
 
 import xml.etree.ElementTree as ET
-from pyfire.contact import Contact
+from pyfire.elements import iq_query
 
 class Iq(object):
     """This Class handles <iq> XMPP frames"""
@@ -57,41 +57,8 @@ class Iq(object):
 
     def query(self, request):
         """Implements the query command"""
-        """
-            TODO: implement namespaces:
-                    jabber:iq:private -> XEP-0049
-        """
-
-        response = ET.Element("query")
-        if request.get("xmlns") == """http://jabber.org/protocol/disco#info""":
-            """XEP-0030"""
-            features = [
-                'urn:xmpp:ping', # XEP-0199
-            ]
-
-            response.set("xmlns", """http://jabber.org/protocol/disco#info""")
-            for feature in features:
-                feat_elem = ET.SubElement(response, "feature")
-                feat_elem.set("var", feature)
-        elif request.get("xmlns") == """jabber:iq:roster""":
-            """RFC6121 Section 2"""
-            response.set("xmlns", """jabber:iq:roster""")
-            """ TODO: return real roster """
-            contact = Contact("test@localhost")
-            contact.subscription = "both"
-            contact.approved = "true"
-            response.append(contact.to_element())
-            contact = Contact("test2@localhost")
-            contact.approved = "true"
-            contact.subscription = "both"
-            response.append(contact.to_element())
-        elif request.get("xmlns") == """jabber:iq:last""":
-            """XEP-0012"""
-            response.set("xmlns", "jabber.iq.last")
-            """ TODO: set real last activity of requested contact """
-            response.set("seconds", "0")
-
-        return response
+        handler = iq_query.Iq_query()
+        return handler.handle(request)
 
     def ping(self, request):
         """A No-op for XEP-0199"""
