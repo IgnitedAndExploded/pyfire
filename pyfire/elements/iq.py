@@ -64,6 +64,7 @@ class Iq(object):
 
         response = ET.Element("query")
         if request.get("xmlns") == """http://jabber.org/protocol/disco#info""":
+            """XEP-0030"""
             features = [
                 'urn:xmpp:ping', # XEP-0199
             ]
@@ -73,6 +74,7 @@ class Iq(object):
                 feat_elem = ET.SubElement(response, "feature")
                 feat_elem.set("var", feature)
         elif request.get("xmlns") == """jabber:iq:roster""":
+            """RFC6121 Section 2"""
             response.set("xmlns", """jabber:iq:roster""")
             """ TODO: return real roster """
             contact = Contact("test@localhost")
