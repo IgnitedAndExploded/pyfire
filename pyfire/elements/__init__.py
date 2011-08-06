@@ -12,6 +12,7 @@
 import uuid
 import xml.etree.ElementTree as ET
 
+import pyfire.configuration as config
 from pyfire.elements import iq, presence
 from pyfire.streamprocessor import StreamContentException
 
@@ -76,6 +77,13 @@ class TagHandler(object):
     def streamhandler(self, attrs):
         """Handles a stream start"""
 
+        # check if we are responsible for this stream
+        self.hostname = attrs.getValue("to")
+        # TODO: change to database based config if it exists
+        if self.hostname not in config.get("listeners", "domains").split(','):
+            self.connection.stop_connection()
+            return
+
         if attrs == {}:
             # </stream:stream> received
             self.connection.stop_connection()
@@ -83,8 +91,7 @@ class TagHandler(object):
             # Stream restart
             stream = ET.Element("stream:stream")
             stream.set("xmlns", attrs.getValue("xmlns"))
-            # FIXME: set real from attribute based on config
-            stream.set("from", attrs.getValue("to"))
+            stream.set("from", self.hostname)
             stream.set("id", uuid.uuid4().hex)
             stream.set("version", "1.0")
             stream.set("xml:lang", "en")

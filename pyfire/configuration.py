@@ -26,6 +26,8 @@ config.set('database', 'custom_url', '')
 config.add_section('listeners')
 config.set('listeners', 'ip', '127.0.0.1')
 config.set('listeners', 'clientport', '5222')
+# TODO: Temporary item until database stored config is available
+config.set('listeners', 'domains', 'localhost')
 
 config.add_section('logging')
 config.set('logging', 'global_level', 'ERROR')
