@@ -24,6 +24,7 @@ class AuthenticationHandler(object):
 
     namespace = "urn:ietf:params:xml:ns:xmpp-auth"
     supported_mechs = {}
+    authenticated_user = ""
 
     check_registry = None
 

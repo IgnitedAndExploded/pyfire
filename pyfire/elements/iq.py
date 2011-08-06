@@ -16,6 +16,11 @@ from pyfire.elements import iq_query
 class Iq(object):
     """This Class handles <iq> XMPP frames"""
 
+    def __init__(self, tag_handler):
+        super(Iq, self).__init__()
+
+        self.tag_handler = tag_handler
+
     def handle(self, tree):
         """<iq> handler, returns a response that should be sent back"""
 
@@ -39,14 +44,16 @@ class Iq(object):
 
     def bind(self, request):
         """Handles bind requests"""
-        # return dummy bind response for now
         bind = ET.Element("bind")
         bind.set("xmlns", "urn:ietf:params:xml:ns:xmpp-bind")
         jid = ET.SubElement(bind, "jid")
+        # add resource to our JID if provided
         if request.find("resource") != None:
-            jid.text = "test@localhost/" + request.find("resource").text
-        else:
-            jid.text = "test@localhost/blahhhhh"
+            self.tag_handler.jid.resource = request.find("resource").text
+            if not self.tag_handler.jid.validate():
+                self.tag_handler.jid.resource = None
+
+        jid.text = unicode(self.tag_handler.jid)
         return bind
 
     def session(self, request):

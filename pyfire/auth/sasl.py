@@ -154,6 +154,7 @@ class SASLAuthHandler(AuthenticationHandler):
             authzid, authcid, password = splits
             try:
                 self.check_registry.validate_userpass(authcid, password)
+                self.authenticated_user = authcid
             except InvalidAuthenticationError:
                 raise NotAuthorizedError
         except (TypeError, InvalidAuthenticationError):

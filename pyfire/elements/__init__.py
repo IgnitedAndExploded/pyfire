@@ -13,6 +13,7 @@ import uuid
 import xml.etree.ElementTree as ET
 
 import pyfire.configuration as config
+from pyfire import jid
 from pyfire.elements import iq, presence
 from pyfire.streamprocessor import StreamContentException
 
@@ -26,9 +27,12 @@ class TagHandler(object):
         self.send_element = connection.send_element
         self.send_string = connection.send_string
 
+        self.jid = None
+        self.hostname = None
+
         self.authenticated = False
 
-        self.iq = iq.Iq()
+        self.iq = iq.Iq(self)
         self.presence = presence.Presence()
 
     def contenthandler(self, tree):
@@ -41,6 +45,7 @@ class TagHandler(object):
                 handler = registry.request_handler(namespace)
                 handler.process(tree)
                 self.connection.parser.reset()
+                self.jid = jid.JID("%s@%s" % (handler.authenticated_user, self.hostname))
                 self.authenticated = True
                 response_element = ET.Element("success")
                 response_element.set("xmlns", namespace)
