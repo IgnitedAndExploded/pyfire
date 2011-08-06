@@ -18,7 +18,7 @@ try:
     class Logger(logbook.Logger):
         def __init__(self, name):
             try:
-                level = config.get('logging', name.replace('.', '_')).upper()
+                level = config.get('logging', name.replace('.', '_').lower()).upper()
             except config.NoOptionError:
                 level = ''
 
