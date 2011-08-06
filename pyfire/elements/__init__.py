@@ -77,17 +77,17 @@ class TagHandler(object):
     def streamhandler(self, attrs):
         """Handles a stream start"""
 
-        # check if we are responsible for this stream
-        self.hostname = attrs.getValue("to")
-        # TODO: change to database based config if it exists
-        if self.hostname not in config.get("listeners", "domains").split(','):
-            self.connection.stop_connection()
-            return
-
         if attrs == {}:
             # </stream:stream> received
             self.connection.stop_connection()
         else:
+            # check if we are responsible for this stream
+            self.hostname = attrs.getValue("to")
+            # TODO: change to database based config if it exists
+            if self.hostname not in config.get("listeners", "domains").split(','):
+                self.connection.stop_connection()
+                return
+
             # Stream restart
             stream = ET.Element("stream:stream")
             stream.set("xmlns", attrs.getValue("xmlns"))
