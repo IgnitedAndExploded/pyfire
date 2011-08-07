@@ -22,7 +22,7 @@ class JID(object):
 
     __slots__ = ('local', 'domain', 'resource', 'real_domain')
 
-    def __init__(self, jid, raise_validation_error=True):
+    def __init__(self, jid, validate_on_init=True):
         super(JID, self).__init__()
 
         self.real_domain = False
@@ -43,7 +43,8 @@ class JID(object):
             self.domain = parts[0]
             self.resource = None
 
-        self.validate(raise_validation_error)
+        if validate_on_init:
+            self.validate(raise_error=True)
 
     def __eq__(self, other):
         return self.local == other.local and \
@@ -61,11 +62,11 @@ class JID(object):
         else:
             return self.domain
 
-    def validate(self, raiseerror=False):
+    def validate(self, raise_error=False):
         """Validate JID, either return a bool or raise :py:exc:`ValueErrors`"""
 
         if len(self.domain) < 1:
-            if raiseerror:
+            if raise_error:
                 raise ValueError("A domain is required")
             else:
                 return False
@@ -75,27 +76,27 @@ class JID(object):
                      RE_DOMAIN.match(self.domain) is not None) or \
                     util.is_valid_ipv4(self.domain) or \
                     util.is_valid_ipv6(self.domain)):
-                if raiseerror:
+                if raise_error:
                     raise ValueError("malformed domain")
                 else:
                     return False
             self.real_domain = True
         else:
             if len(self.domain.encode("utf-8")) > 1024:
-                if raiseerror:
+                if raise_error:
                     raise ValueError("malformed domain")
                 else:
                     return False
 
         if self.local is not None:
             if len(self.local) < 1:
-                if raiseerror:
+                if raise_error:
                     raise ValueError("local part too short")
                 else:
                     return False
 
             if len(self.local.encode("utf-8")) > 1024:
-                if raiseerror:
+                if raise_error:
                     raise ValueError("local part too long")
                 else:
                     return False
@@ -111,20 +112,20 @@ class JID(object):
                         (number >= 0xE000 and number <= 0xFFFD) or \
                         (number >= 0x10000 and number <= 0x10FFFF)
                         ):
-                    if raiseerror:
+                    if raise_error:
                         raise ValueError("malformed local part")
                     else:
                         return False
 
         if self.resource is not None:
             if len(self.resource) < 1:
-                if raiseerror:
+                if raise_error:
                     raise ValueError("resource part too short")
                 else:
                     return False
 
             if len(self.resource.encode("utf-8")) > 1024:
-                if raiseerror:
+                if raise_error:
                     raise ValueError("resource part too long")
                 else:
                     return False
@@ -134,12 +135,12 @@ class JID(object):
                 if not ((number >= 0x20 and number <= 0xD7FF) or \
                         (number >= 0xE000 and number <= 0xFFFD) or \
                         (number >= 0x10000 and number <= 0x10FFFF)):
-                    if raiseerror:
+                    if raise_error:
                         raise ValueError("malformed resource")
                     else:
                         return False
 
-        if not raiseerror:
+        if not raise_error:
             return True
 
     @property

@@ -90,5 +90,5 @@ class TestJID(PyfireTestCase):
 
     def test_bad_jids_false(self):
         for testjid in self.badjids:
-            jid = JID(testjid, raise_validation_error=False)
+            jid = JID(testjid, validate_on_init=False)
             self.assertFalse(jid.validate())
