@@ -9,7 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from xml import sax
 import xml.etree.ElementTree as ET
 
 from pyfire.tests import PyfireTestCase
@@ -30,15 +29,10 @@ class TestContentHandler(PyfireTestCase):
     def setUp(self):
         self.lastattrs = None
         self.lasttree = None
-        self.parser = sax.make_parser(['xml.sax.expatreader'])
-        self.handler = processor.XMPPContentHandler(self.fakestreamhandler, self.fakecontenthandler)
-        self.parser.setContentHandler(self.handler)
+        self.parser = processor.StreamProcessor(self.fakestreamhandler, self.fakecontenthandler)
 
     def tearDown(self):
-        try:
-            self.parser.close()
-        except sax.SAXParseException:
-            pass
+        self.parser.close()
 
     def test_client_streamstart(self):
         self.parser.feed(STREAMSTART)

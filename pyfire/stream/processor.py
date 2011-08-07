@@ -100,3 +100,11 @@ class StreamProcessor(object):
 
     def reset(self):
         self.parser.reset()
+
+    def close(self):
+        # ignore parser errors on end of document as we are processing streams
+        # that may not contain endtags of <stream>
+        try:
+            self.parser.close()
+        except SAXParseException:
+            pass
