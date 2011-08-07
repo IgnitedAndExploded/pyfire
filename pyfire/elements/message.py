@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     pyfire.elements.message
-    ~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~
 
     This module handles XMPP message frames
     as defined in RFC 6121 Section 4.7
@@ -15,7 +15,7 @@ from xml.etree.ElementTree import Element, tostring
 
 
 class Message(object):
-    """This Class handles <message> XMPP frames"""
+    """Handles <message> XMPP frames"""
 
     def __init__(self, tag_handler):
         super(Message, self).__init__()
