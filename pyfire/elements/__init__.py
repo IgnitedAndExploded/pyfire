@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 
 import pyfire.configuration as config
 from pyfire import jid
-from pyfire.elements import iq, presence
+from pyfire.elements import iq, message, presence
 from pyfire.streamprocessor import StreamContentException
 
 
@@ -33,6 +33,7 @@ class TagHandler(object):
         self.authenticated = False
 
         self.iq = iq.Iq(self)
+        self.message = message.Message(self)
         self.presence = presence.Presence(self)
 
     def contenthandler(self, tree):
@@ -57,6 +58,8 @@ class TagHandler(object):
                 response_element.set("xmlns", namespace)
             elif tree.tag == "iq":
                 response_element = self.iq.handle(tree)
+            elif tree.tag == "message":
+                response_element = self.message.handle(tree)
             elif tree.tag == "presence":
                 response_element = self.presence.handle(tree)
 
