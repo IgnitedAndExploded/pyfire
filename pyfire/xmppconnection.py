@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ET
 from pyfire import streamprocessor
 from pyfire.logger import Logger
 from pyfire.elements import TagHandler
+from pyfire.xmppstreamerrors import StreamError
 
 log = Logger("XMPPConnection")
 
@@ -47,6 +48,10 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
                     break
                 log.debug("Received data from client:" + data)
                 self.parser.feed(data)
+            except StreamError, e:
+                self.send_string(unicode(e))
+                # Stream errors are unrecoverable so terminate the connection
+                self.stop_connection()
             except socket.timeout:
                 pass
 
