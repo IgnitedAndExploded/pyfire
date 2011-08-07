@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 class StreamError(Exception):
     """Base class for all stream errors that are caused while document parsing"""
 
-    def __init__(self, errorname = None):
+    def __init__(self, errorname=None):
         self.errorname = errorname
         self.element = ET.Element("stream:error")
         self.element.set("xmlns", "urn:ietf:params:xml:ns:xmpp-streams")
@@ -60,7 +60,7 @@ class HostGoneError(StreamError):
     """Host has gone away (we dont serve this host anymore)"""
 
     def __init__(self):
-        StreamError.__init__(self, "host-gone", True)
+        StreamError.__init__(self, "host-gone")
 
 
 class HostUnknownError(StreamError):
@@ -132,7 +132,7 @@ class PolicyViolationError(StreamError):
        exceeds a configured size limit);
     """
 
-    def __init__(self, message = None):
+    def __init__(self, message=None):
         StreamError.__init__(self, "policy-violation")
         if message is not None:
             body = ET.Element("body")
@@ -184,7 +184,7 @@ class SeeOtherHostError(StreamError):
        of the same service provider.
     """
 
-    def __init__(self, other_host = None):
+    def __init__(self, other_host=None):
         StreamError.__init__(self, "see-other-host")
         if other_host is not None:
             self.element.text = other_host

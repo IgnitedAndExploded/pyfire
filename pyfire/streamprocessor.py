@@ -98,7 +98,6 @@ class StreamProcessor(object):
                                 content_handler)
         self.parser.setContentHandler(self.processor)
 
-
     def feed(self, data):
         """Feeds the XML parser with additional data"""
         try:

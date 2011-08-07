@@ -34,6 +34,7 @@ config.set('logging', 'global_level', 'ERROR')
 
 config.read(['pyfire.cfg', os.path.expanduser('~/.pyfire.cfg')])
 
+
 def getlist(section, option, separator=','):
     """Make a list from an option. By default split on comma."""
     items = config.get(section, option)
