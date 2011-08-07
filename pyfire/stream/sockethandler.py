@@ -18,7 +18,7 @@ from pyfire.stream import processor
 from pyfire.stream.elements import TagHandler
 from pyfire.stream.errors import StreamError
 
-log = Logger("XMPPSocketHandler")
+log = Logger("stream.socket")
 
 
 class XMPPSocketHandler(SocketServer.BaseRequestHandler):
