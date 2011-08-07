@@ -18,14 +18,16 @@ try:
     class Logger(logbook.Logger):
         def __init__(self, name):
             try:
-                level = config.get('logging', name.replace('.', '_').lower()).upper()
+                classname = name.replace('.', '_').lower()
+                level = config.get('logging', classname).upper()
             except config.NoOptionError:
                 level = ''
 
             if not level:
                 level = config.get('logging', 'global_level').upper()
 
-            if level not in frozenset(['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET']):
+            if level not in frozenset(['CRITICAL', 'ERROR', 'WARNING',
+                                       'INFO', 'DEBUG', 'NOTSET']):
                 warnings.warn("No such loglevel %s" % level, RuntimeWarning)
                 level = 'ERROR'
 

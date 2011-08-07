@@ -73,7 +73,7 @@ class Iq(object):
 
     def vcard(self, request):
         """Returns the users vCard as specified by XEP-0054"""
-        
+
         # TODO: Stub - Implement real vCard storage
         return ET.Element("vCard")
 

@@ -13,7 +13,9 @@ import xml.etree.ElementTree as ET
 
 
 class StreamError(Exception):
-    """Base class for all stream errors that are caused while document parsing"""
+    """Base class for all stream errors that are
+       caused while document parsing
+    """
 
     def __init__(self, errorname=None):
         self.errorname = errorname
@@ -96,14 +98,16 @@ class InvalidFromError(StreamError):
 
 
 class InvalidNamespaceError(StreamError):
-    """The stream namespace name is something other than RFC6120 Section 11.2"""
+    """The stream namespace name is something other than
+       RFC6120 Section 11.2
+    """
 
     def __init__(self):
         StreamError.__init__(self, "invalid-namespace")
 
 
 class InvalidXMLError(StreamError):
-    """The stream namespace name is something other than RFC6120 Section 11.2"""
+    """Stream contains XML data that cannot be processed."""
 
     def __init__(self):
         StreamError.__init__(self, "invalid-xml")

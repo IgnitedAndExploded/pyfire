@@ -13,7 +13,7 @@ import uuid
 import xml.etree.ElementTree as ET
 
 import pyfire.configuration as config
-from pyfire import jid
+from pyfire.jid import JID
 from pyfire.stream.elements import iq, message, presence
 from pyfire.stream.errors import HostUnknownError, StreamError
 
@@ -52,7 +52,8 @@ class TagHandler(object):
                 handler = registry.request_handler(namespace)
                 handler.process(tree)
                 self.connection.parser.reset()
-                self.jid = jid.JID("%s@%s" % (handler.authenticated_user, self.hostname))
+                self.jid = JID("@".join(handler.authenticated_user,
+                                        self.hostname))
                 self.authenticated = True
                 response_element = ET.Element("success")
                 response_element.set("xmlns", namespace)
