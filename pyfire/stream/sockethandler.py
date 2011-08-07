@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.xmppconnection
-    ~~~~~~~~~~~~~~~~~~~~~
+    pyfire.stream.socket
+    ~~~~~~~~~~~~~~~~~~~~
 
     Handles a XMPP Stream (connection)
 
@@ -13,22 +13,22 @@ import SocketServer
 import socket
 import xml.etree.ElementTree as ET
 
-from pyfire import streamprocessor
 from pyfire.logger import Logger
-from pyfire.elements import TagHandler
-from pyfire.xmppstreamerrors import StreamError
+from pyfire.stream import processor
+from pyfire.stream.elements import TagHandler
+from pyfire.stream.errors import StreamError
 
-log = Logger("XMPPConnection")
+log = Logger("XMPPSocketHandler")
 
 
-class XMPPConnection(SocketServer.BaseRequestHandler):
+class XMPPSocketHandler(SocketServer.BaseRequestHandler):
 
     def handle(self):
         """Starts the handling for a new connection"""
 
         # init StreamProcessor
         self.taghandler = TagHandler(self)
-        self.parser = streamprocessor.StreamProcessor(
+        self.parser = processor.StreamProcessor(
                             self.taghandler.streamhandler,
                             self.taghandler.contenthandler)
 

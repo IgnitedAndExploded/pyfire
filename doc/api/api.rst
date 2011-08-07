@@ -10,5 +10,5 @@ Contents:
    configuration
    jid
    logger
-   streamprocessor
-   xmppconnection
+   stream/processor
+   stream/sockethandler

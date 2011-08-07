@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.tests.elements
-    ~~~~~~~~~~~~~~~~~~~~~
+    pyfire.tests.stream.elements
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Make sure elements have nice behaviour
 

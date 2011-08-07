@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.elements
-    ~~~~~~~~~~~~~~~
+    pyfire.stream.elements
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Process stream events and redirect to tag handlers
 
@@ -14,9 +14,8 @@ import xml.etree.ElementTree as ET
 
 import pyfire.configuration as config
 from pyfire import jid
-from pyfire.elements import iq, message, presence
-from pyfire.streamprocessor import StreamContentException
-from pyfire.xmppstreamerrors import HostUnknownError
+from pyfire.stream.elements import iq, message, presence
+from pyfire.stream.errors import HostUnknownError, StreamError
 
 
 class TagHandler(object):
@@ -66,7 +65,7 @@ class TagHandler(object):
 
             if response_element is not None:
                 self.send_element(response_element)
-        except StreamContentException, e:
+        except StreamError, e:
             self.send_string(unicode(e))
 
     def add_auth_options(self, feature_element):

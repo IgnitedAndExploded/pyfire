@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.elements.message
-    ~~~~~~~~~~~~~~~~~~~~~~~
+    pyfire.stream.elements.message
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     This module handles XMPP message frames
     as defined in RFC 6121 Section 4.7

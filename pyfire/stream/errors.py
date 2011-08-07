@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.xmppstreamerrors
-    ~~~~~~~~~~~~~~~~~~~~~~
+    pyfire.stream.errors
+    ~~~~~~~~~~~~~~~~~~~~
 
-    Holds all defined Errors/Exceptions defined in RFC6121 Section 4.9.3
+    Holds all Errors/Exceptions defined in RFC6121 Section 4.9.3
 
     :copyright: 2011 by the pyfire Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
@@ -23,7 +23,7 @@ class StreamError(Exception):
     def __unicode__(self):
         if self.errorname is not None:
             self.element.append(ET.Element(self.errorname))
-        return ET.tostring(self.element)
+        return unicode(ET.tostring(self.element))
 
 
 class BadFormatError(StreamError):
@@ -228,7 +228,7 @@ class UnsupportedFeatureError(StreamError):
         StreamError.__init__(self, "unsupported-feature")
 
 
-class unsupportedStanzaError(StreamError):
+class UnsupportedStanzaError(StreamError):
     """The initiating entity has sent a first-level child of the stream that
        is not supported by the server
     """

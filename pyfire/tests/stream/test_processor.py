@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.tests.test_streamprocessor
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    pyfire.tests.stream.test_streamprocessor
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Unittests for streamprocessor
 
@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 
 from pyfire.tests import PyfireTestCase
 
-from pyfire import streamprocessor
+from pyfire.stream import processor, errors
 
 STREAMSTART = """<?xml version='1.0'?><stream:stream xmlns="jabber:client" to="localhost" version="1.0" xmlns:stream="http://etherx.jabber.org/streams">"""
 
@@ -31,7 +31,7 @@ class TestContentHandler(PyfireTestCase):
         self.lastattrs = None
         self.lasttree = None
         self.parser = sax.make_parser(['xml.sax.expatreader'])
-        self.handler = streamprocessor.XMPPContentHandler(self.fakestreamhandler, self.fakecontenthandler)
+        self.handler = processor.XMPPContentHandler(self.fakestreamhandler, self.fakecontenthandler)
         self.parser.setContentHandler(self.handler)
 
     def tearDown(self):
@@ -46,7 +46,7 @@ class TestContentHandler(PyfireTestCase):
 
     def test_bad_start(self):
         teststring = """<?xml version='1.0'?><hello>"""
-        with self.assertRaises(streamprocessor.UnknownStreamException) as cm:
+        with self.assertRaises(errors.BadFormatError) as cm:
             self.parser.feed(teststring)
 
     def test_treeparse(self):

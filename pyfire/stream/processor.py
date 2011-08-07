@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.streamprocessor
-    ~~~~~~~~~~~~~~~~~~~~~~
+    pyfire.stream.processor
+    ~~~~~~~~~~~~~~~~~~~~~~~
 
     Implementation of XMPP Stream processing
 
@@ -18,17 +18,7 @@ import xml.etree.ElementTree as ET
 from xml.sax import make_parser as sax_make_parser, SAXParseException
 from xml.sax.handler import ContentHandler
 
-from pyfire.xmppstreamerrors import BadFormatError, InvalidXMLError
-
-
-class StreamContentException(Exception):
-    """Base class for all stream related exceptions we can send back to the client"""
-    pass
-
-
-class UnknownStreamException(StreamContentException):
-    """Stream starts with something other than XMPP control"""
-    pass
+from pyfire.stream.errors import BadFormatError, InvalidXMLError
 
 
 class XMPPContentHandler(ContentHandler):
@@ -54,7 +44,7 @@ class XMPPContentHandler(ContentHandler):
         # first level, stream starts
         if self.depth == 0:
             if name != "stream:stream":
-                raise UnknownStreamException
+                raise BadFormatError
             self.streamhandler(attrs)
             self.depth = 1
         # second level creates element tree
@@ -79,7 +69,7 @@ class XMPPContentHandler(ContentHandler):
     def makedictfromattrs(self, attrs):
         """Attributes from sax are not dictionaries. ElementTree doesn't
            copy automatically, so do it here and convert to ordered dict."""
-        retdict = OrderedDict()
+        retdict = OrderedDict(attrs.items())
         for k, v in attrs.items():
             retdict[k] = v
         return retdict
@@ -107,3 +97,6 @@ class StreamProcessor(object):
             if msg == "mismatched tag":
                 raise BadFormatError
             raise InvalidXMLError
+
+    def reset(self):
+        self.parser.reset()

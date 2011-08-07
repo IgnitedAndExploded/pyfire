@@ -15,19 +15,19 @@ import os.path
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(path)
 
-
 import SocketServer
-from pyfire.xmppconnection import XMPPConnection
+
+from pyfire import configuration as config
 from pyfire.auth.backends import DummyTrueValidator
 from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry
-import pyfire.configuration as config
+from pyfire.stream.sockethandler import XMPPSocketHandler
 
 
 class XMPPTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     def __init__(self,
                  sockaddr=(config.get('listeners', 'ip'),
                            config.getint('listeners', 'clientport')),
-                 handler=XMPPConnection):
+                 handler=XMPPSocketHandler):
         SocketServer.TCPServer.__init__(self, sockaddr, handler)
 
         # init auth backends

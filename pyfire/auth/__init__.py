@@ -9,10 +9,10 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from pyfire.streamprocessor import StreamContentException
+from pyfire.stream.errors import StreamError
 
 
-class AuthenticationError(StreamContentException):
+class AuthenticationError(StreamError):
     """Raised on any authentication related error"""
 
     def __init__(self, errorname=None):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.presence
-    ~~~~~~~~~~~~~
+    pyfire.stream.elements.presence
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     This module handles XMPP presence packets
     as defined in RFC 6121 Section 4.7

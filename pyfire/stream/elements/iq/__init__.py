@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.iq
-    ~~~~~~~~~~~~~
+    pyfire.stream.elements.iq
+    ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    This module handles XMPP iq packets
+    Handles XMPP iq packets
 
     :copyright: 2011 by the pyfire Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
 
 import xml.etree.ElementTree as ET
-from pyfire.elements import iq_query
+from pyfire.stream.elements.iq.query import Query
 
 
 class Iq(object):
@@ -65,7 +65,7 @@ class Iq(object):
 
     def query(self, request):
         """Implements the query command"""
-        handler = iq_query.Iq_query()
+        handler = Query()
         return handler.handle(request)
 
     def ping(self, request):
@@ -73,7 +73,8 @@ class Iq(object):
 
     def vcard(self, request):
         """Returns the users vCard as specified by XEP-0054"""
-        """ TODO: Stub - Implement real vCard storage """
+        
+        # TODO: Stub - Implement real vCard storage
         return ET.Element("vCard")
 
     def failure(self, requested_service):
