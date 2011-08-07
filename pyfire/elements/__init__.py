@@ -99,8 +99,8 @@ class TagHandler(object):
         else:
             # check if we are responsible for this stream
             self.hostname = attrs.getValue("to")
-            # TODO: change to database based config if it exists
-            if self.hostname not in config.get("listeners", "domains").split(','):
+
+            if self.hostname not in config.getlist("listeners", "domains"):
                 self.connection.stop_connection()
                 return
 
