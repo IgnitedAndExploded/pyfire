@@ -21,7 +21,7 @@ class StreamError(Exception):
         self.element.set("xmlns", "urn:ietf:params:xml:ns:xmpp-streams")
 
     def __unicode__(self):
-        if not self.errorname is None:
+        if self.errorname is not None:
             self.element.append(ET.Element(self.errorname))
         return ET.tostring(self.element)
 
@@ -134,7 +134,7 @@ class PolicyViolationError(StreamError):
 
     def __init__(self, message = None):
         StreamError.__init__(self, "policy-violation")
-        if not message is None:
+        if message is not None:
             body = ET.Element("body")
             body.text = message
             self.element.append(body)
@@ -186,7 +186,7 @@ class SeeOtherHostError(StreamError):
 
     def __init__(self, other_host = None):
         StreamError.__init__(self, "see-other-host")
-        if not other_host is None:
+        if other_host is not None:
             self.element.text = other_host
 
 
