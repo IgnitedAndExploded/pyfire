@@ -4,7 +4,7 @@ import unittest
 
 import sys
 import os.path
-import os.path.join as pjoin
+from os.path import join as pjoin
 
 # Add pyfire to namespace
 path = os.path.abspath(pjoin(os.path.dirname(__file__), '..'))
