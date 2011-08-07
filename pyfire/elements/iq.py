@@ -25,9 +25,9 @@ class Iq(object):
         """<iq> handler, returns a response that should be sent back"""
 
         # prepare result header
-        # TODO: add from attribute
         iq = ET.Element("iq")
         iq.set("id", tree.get("id"))
+        iq.set("from", self.tag_handler.hostname)
         iq.set("type", "result")
         # dispatch to the handler for the given request query
         for req in list(tree):

@@ -33,10 +33,15 @@ class TagHandler(object):
         self.authenticated = False
 
         self.iq = iq.Iq(self)
-        self.presence = presence.Presence()
+        self.presence = presence.Presence(self)
 
     def contenthandler(self, tree):
         """Handles an incomming content tree"""
+
+        # set/replace the from attribute in stanzas as required
+        # by RFC 6120 Section 8.1.2.1
+        if self.authenticated:
+            tree.set("from", self.jid)
 
         try:
             if tree.tag == "auth":
