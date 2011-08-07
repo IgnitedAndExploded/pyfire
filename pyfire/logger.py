@@ -14,11 +14,15 @@ import pyfire.configuration as config
 
 try:
     import logbook
+    import logbook.more
 
     class Logger(logbook.Logger):
         def __init__(self, name):
+            classname = name.replace('.', '_').lower()
+            if classname.startswith("pyfire_"):
+                classname = classname[7:]
+
             try:
-                classname = name.replace('.', '_').lower()
                 level = config.get('logging', classname).upper()
             except config.NoOptionError:
                 level = ''
@@ -31,7 +35,7 @@ try:
                 warnings.warn("No such loglevel %s" % level, RuntimeWarning)
                 level = 'ERROR'
 
-            super(Logger, self).__init__(name, getattr(logbook, level))
+            super(Logger, self).__init__(classname, getattr(logbook, level))
 
 except ImportError:
     class Logger(object):
