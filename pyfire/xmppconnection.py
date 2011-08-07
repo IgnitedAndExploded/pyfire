@@ -11,7 +11,6 @@
 
 import SocketServer
 import socket
-from xml.sax import make_parser as sax_make_parser
 import xml.etree.ElementTree as ET
 
 from pyfire import streamprocessor
@@ -27,13 +26,11 @@ class XMPPConnection(SocketServer.BaseRequestHandler):
     def handle(self):
         """Starts the handling for a new connection"""
 
-        # create stream processor
-        self.parser = sax_make_parser(['xml.sax.expatreader'])
+        # init StreamProcessor
         self.taghandler = TagHandler(self)
-        self.processor = streamprocessor.XMPPContentHandler(
-                                self.taghandler.streamhandler,
-                                self.taghandler.contenthandler)
-        self.parser.setContentHandler(self.processor)
+        self.parser = streamprocessor.StreamProcessor(
+                            self.taghandler.streamhandler,
+                            self.taghandler.contenthandler)
 
         # TCP loop
         self.request.settimeout(0.1)

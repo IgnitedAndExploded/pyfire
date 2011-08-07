@@ -15,7 +15,10 @@ except ImportError:
     from sqlalchemy.util import OrderedDict
 
 import xml.etree.ElementTree as ET
+from xml.sax import make_parser as sax_make_parser, SAXParseException
 from xml.sax.handler import ContentHandler
+
+from pyfire.xmppstreamerrors import InvalidXMLError
 
 
 class StreamContentException(Exception):
@@ -80,3 +83,25 @@ class XMPPContentHandler(ContentHandler):
         for k, v in attrs.items():
             retdict[k] = v
         return retdict
+
+
+class StreamProcessor(object):
+    """Encapsulates the XML parser so we can handle parse errors better"""
+
+    __slots__ = ('parser', 'processor')
+
+    def __init__(self, stream_handler, content_handler):
+        # create stream processor
+        self.parser = sax_make_parser(['xml.sax.expatreader'])
+        self.processor = XMPPContentHandler(
+                                stream_handler,
+                                content_handler)
+        self.parser.setContentHandler(self.processor)
+
+
+    def feed(self, data):
+        """Feeds the XML parser with additional data"""
+        try:
+            self.parser.feed(data)
+        except SAXParseException, e:
+            raise InvalidXMLError
