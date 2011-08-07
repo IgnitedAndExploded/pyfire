@@ -16,6 +16,7 @@ import pyfire.configuration as config
 from pyfire import jid
 from pyfire.elements import iq, message, presence
 from pyfire.streamprocessor import StreamContentException
+from pyfire.xmppstreamerrors import HostUnknownError
 
 
 class TagHandler(object):
@@ -99,10 +100,8 @@ class TagHandler(object):
         else:
             # check if we are responsible for this stream
             self.hostname = attrs.getValue("to")
-
             if self.hostname not in config.getlist("listeners", "domains"):
-                self.connection.stop_connection()
-                return
+                raise HostUnknownError
 
             # Stream restart
             stream = ET.Element("stream:stream")
