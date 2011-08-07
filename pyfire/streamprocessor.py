@@ -18,7 +18,7 @@ import xml.etree.ElementTree as ET
 from xml.sax import make_parser as sax_make_parser, SAXParseException
 from xml.sax.handler import ContentHandler
 
-from pyfire.xmppstreamerrors import InvalidXMLError
+from pyfire.xmppstreamerrors import BadFormatError, InvalidXMLError
 
 
 class StreamContentException(Exception):
@@ -103,4 +103,7 @@ class StreamProcessor(object):
         try:
             self.parser.feed(data)
         except SAXParseException, e:
+            msg = e.getMessage()
+            if msg == "mismatched tag":
+                raise BadFormatError
             raise InvalidXMLError
