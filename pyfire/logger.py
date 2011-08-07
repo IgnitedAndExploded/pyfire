@@ -34,8 +34,8 @@ try:
                                        'INFO', 'DEBUG', 'NOTSET']):
                 warnings.warn("No such loglevel %s" % level, RuntimeWarning)
                 level = 'ERROR'
-
             super(Logger, self).__init__(classname, getattr(logbook, level))
+            self.handlers.append(logbook.more.ColorizedStderrHandler())
 
 except ImportError:
     class Logger(object):
