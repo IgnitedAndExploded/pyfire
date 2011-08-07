@@ -22,7 +22,7 @@ class JID(object):
 
     __slots__ = ('local', 'domain', 'resource', 'real_domain')
 
-    def __init__(self, jid):
+    def __init__(self, jid, raise_validation_error=True):
         super(JID, self).__init__()
 
         self.real_domain = False
@@ -43,7 +43,7 @@ class JID(object):
             self.domain = parts[0]
             self.resource = None
 
-        self.validate(raiseerror=True)
+        self.validate(raise_validation_error)
 
     def __eq__(self, other):
         return self.local == other.local and \
@@ -56,6 +56,8 @@ class JID(object):
             return "%s@%s/%s" % (self.local, self.domain, self.resource)
         elif self.local is not None:
             return "%s@%s" % (self.local, self.domain)
+        elif self.resource is not None:
+            return "%s/%s" % (self.domain, self.resource)
         else:
             return self.domain
 
@@ -68,9 +70,9 @@ class JID(object):
             else:
                 return False
 
-        if self.domain.find(".") > 1:
-            if not ((RE_DOMAIN.match(self.domain) or \
-                     len(self.domain) > 255) or \
+        if self.domain.find(".") >= 0 or self.domain.find(":") >= 0:
+            if not ((len(self.domain) < 256 and \
+                     RE_DOMAIN.match(self.domain) is not None) or \
                     util.is_valid_ipv4(self.domain) or \
                     util.is_valid_ipv6(self.domain)):
                 if raiseerror:
@@ -86,6 +88,12 @@ class JID(object):
                     return False
 
         if self.local is not None:
+            if len(self.local) < 1:
+                if raiseerror:
+                    raise ValueError("local part too short")
+                else:
+                    return False
+
             if len(self.local.encode("utf-8")) > 1024:
                 if raiseerror:
                     raise ValueError("local part too long")
@@ -109,6 +117,12 @@ class JID(object):
                         return False
 
         if self.resource is not None:
+            if len(self.resource) < 1:
+                if raiseerror:
+                    raise ValueError("resource part too short")
+                else:
+                    return False
+
             if len(self.resource.encode("utf-8")) > 1024:
                 if raiseerror:
                     raise ValueError("resource part too long")
@@ -132,7 +146,7 @@ class JID(object):
     def bare(self):
         """Return a bare JID (just local and domain part)"""
 
-        if self.local is None or not len(self.local):
-            raise AttributeError("JID lacks a local part")
-
-        return "%s@%s" % (self.local, self.domain)
+        if self.local is not None:
+            return "%s@%s" % (self.local, self.domain)
+        else:
+            return self.domain

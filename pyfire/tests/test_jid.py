@@ -34,10 +34,6 @@ class TestJID(PyfireTestCase):
         self.assertEqual(jid.domain, "host")
         self.assertEqual(jid.resource, None)
 
-    def test_bare_jid(self):
-        jid = JID("user@host/res")
-        self.assertEqual(jid.bare, "user@host")
-
     def test_jid_compare(self):
         jid1 = JID("user1@host/res")
         jid2 = JID("user2@host/res")
@@ -48,7 +44,51 @@ class TestJID(PyfireTestCase):
         JID("user@127.0.0.1/res")
         JID("user@fe80::1/res")
 
-    def test_bare_jid_bad(self):
+    def test_bare_jid(self):
+        jid = JID("user@host/res")
+        self.assertEqual(jid.bare, "user@host")
         jid = JID("host/res")
-        with self.assertRaises(AttributeError) as cm:
-            jid.bare
+        self.assertEqual(jid.bare, "host")
+
+    def test_str(self):
+        jids = [
+            "host",
+            "user@host",
+            "host/res",
+            "user@host/res"
+        ]
+
+        for testjid in jids:
+            jid = JID(testjid)
+            self.assertEqual(str(jid), testjid)
+
+    def test_jid_true(self):
+        jid = JID("user@host/res")
+        self.assertTrue(jid.validate())
+
+    badjids = [
+        "",
+        "1.2.3.256",
+        "a" * 128 + "." + "a" * 128,
+        unichr(0x100) * 512 + "a",  # results in 1025 byte
+        "fg::",  # looks like ipv6 but is invalid
+        "test/",
+        unichr(0x100) * 512 + "a@testhost",
+        "@testhost",
+        unichr(0xD800) + "@testhost",
+        "testhost/" + unichr(0x100) * 512 + "a",
+        "testhost/" + unichr(0xD800)
+    ]
+
+    def test_bad_jids_raise(self):
+        for testjid in self.badjids:
+            try:
+                with self.assertRaises(ValueError) as cm:
+                    jid = JID(testjid)
+            except AssertionError:
+                raise AssertionError("ValueError not raised for JID '%s'" % testjid)
+
+    def test_bad_jids_false(self):
+        for testjid in self.badjids:
+            jid = JID(testjid, raise_validation_error=False)
+            self.assertFalse(jid.validate())
