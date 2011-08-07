@@ -47,3 +47,8 @@ class TestJID(PyfireTestCase):
     def test_jid_ip(self):
         JID("user@127.0.0.1/res")
         JID("user@fe80::1/res")
+
+    def test_bare_jid_bad(self):
+        jid = JID("host/res")
+        with self.assertRaises(AttributeError) as cm:
+            jid.bare
