@@ -52,8 +52,8 @@ class TagHandler(object):
                 handler = registry.request_handler(namespace)
                 handler.process(tree)
                 self.connection.parser.reset()
-                self.jid = JID("@".join(handler.authenticated_user,
-                                        self.hostname))
+                self.jid = JID("@".join([handler.authenticated_user,
+                                         self.hostname]))
                 self.authenticated = True
                 response_element = ET.Element("success")
                 response_element.set("xmlns", namespace)
