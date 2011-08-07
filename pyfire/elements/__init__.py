@@ -44,6 +44,7 @@ class TagHandler(object):
             tree.set("from", self.jid)
 
         try:
+            response_element = None
             if tree.tag == "auth":
                 registry = self.server.auth_registry
                 namespace = tree.get('xmlns')
@@ -58,7 +59,9 @@ class TagHandler(object):
                 response_element = self.iq.handle(tree)
             elif tree.tag == "presence":
                 response_element = self.presence.handle(tree)
-            self.send_element(response_element)
+
+            if not response_element is None:
+                self.send_element(response_element)
         except StreamContentException, e:
             self.send_string(unicode(e))
 
