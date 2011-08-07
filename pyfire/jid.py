@@ -51,10 +51,10 @@ class JID(object):
                self.resource == other.resource
 
     def __str__(self):
-        if not self.local is None and \
-           not self.resource is None:
+        if self.local is not None and \
+           self.resource is not None:
             return "%s@%s/%s" % (self.local, self.domain, self.resource)
-        elif not self.local is None:
+        elif self.local is not None:
             return "%s@%s" % (self.local, self.domain)
         else:
             return self.domain
@@ -85,7 +85,7 @@ class JID(object):
                 else:
                     return False
 
-        if not self.local is None:
+        if self.local is not None:
             if len(self.local.encode("utf-8")) > 1024:
                 if raiseerror:
                     raise ValueError("local part too long")
@@ -108,7 +108,7 @@ class JID(object):
                     else:
                         return False
 
-        if not self.resource is None:
+        if self.resource is not None:
             if len(self.resource.encode("utf-8")) > 1024:
                 if raiseerror:
                     raise ValueError("resource part too long")
@@ -131,6 +131,8 @@ class JID(object):
     @property
     def bare(self):
         """Return a bare JID (just local and domain part)"""
-        if self.local is None:
+
+        if self.local is None or not len(self.local):
             raise AttributeError("JID lacks a local part")
+
         return "%s@%s" % (self.local, self.domain)

@@ -63,7 +63,7 @@ class TagHandler(object):
             elif tree.tag == "presence":
                 response_element = self.presence.handle(tree)
 
-            if not response_element is None:
+            if response_element is not None:
                 self.send_element(response_element)
         except StreamContentException, e:
             self.send_string(unicode(e))
