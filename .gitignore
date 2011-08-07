@@ -5,4 +5,5 @@
 *.pyo
 *.egg
 *messages.mo
-doc/_build
+_build
+.coverage*
