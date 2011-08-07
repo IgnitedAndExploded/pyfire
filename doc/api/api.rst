@@ -9,5 +9,6 @@ Contents:
    authentication
    configuration
    jid
+   logger
    streamprocessor
    xmppconnection
