@@ -64,3 +64,9 @@ class TestContentHandler(PyfireTestCase):
         self.assertEqual(self.lasttree, None)
         self.parser.feed(teststring2)
         self.assertEqual(ET.tostring(self.lasttree), teststring1 + teststring2)
+
+    def test_badxml_no_closing_tag(self):
+        teststring = """<message><body>No closing tag!</message>"""
+        self.parser.feed(STREAMSTART)
+        with self.assertRaises(errors.BadFormatError) as cm:
+            self.parser.feed(teststring)
