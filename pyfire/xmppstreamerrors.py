@@ -22,8 +22,8 @@ class StreamError(Exception):
 
     def __unicode__(self):
         if not self.errorname is None:
-            element.append(ET.Element(self.errorname))
-        return ET.tostring(element)
+            self.element.append(ET.Element(self.errorname))
+        return ET.tostring(self.element)
 
 
 class BadFormatError(StreamError):
