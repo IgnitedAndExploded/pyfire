@@ -85,3 +85,13 @@ class TestTagHandler(PyfireTestCase):
         attrs = MockAttr(attrs)
         with self.assertRaises(errors.UnsupportedVersionError) as cm:
             self.taghandler.streamhandler(attrs)
+
+    def test_no_stream_version(self):
+        attrs = {
+            'to': 'localhost',
+            'xmlns': 'jabber:client',
+            'xmlns:stream': 'http://etherx.jabber.org/streams',
+        }
+        attrs = MockAttr(attrs)
+        self.taghandler.streamhandler(attrs)
+        self.assertFalse('" version="' in self.connection.strings[0])

@@ -103,10 +103,12 @@ class TagHandler(object):
             if self.hostname not in config.getlist("listeners", "domains"):
                 raise HostUnknownError
 
-            remote_version = attrs.getValue("version")
-            if remote_version is not None:
-                if remote_version != "1.0":
+            try:
+                if attrs.getValue("version") != "1.0":
                     raise UnsupportedVersionError
+                include_version = True
+            except KeyError:
+                include_version = False
 
             # Stream restart
             stream = ET.Element("stream:stream")
@@ -115,7 +117,7 @@ class TagHandler(object):
             stream.set("id", uuid.uuid4().hex)
             # only include version in response if client sent its max supported
             # version (RFC6120 Section 4.7.5)
-            if remote_version is not None:
+            if include_version:
                 stream.set("version", "1.0")
             stream.set("xml:lang", "en")
             stream.set("xmlns:stream", "http://etherx.jabber.org/streams")
