@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 import pyfire.configuration as config
 from pyfire.jid import JID
 from pyfire.stream.elements import iq, message, presence
-from pyfire.stream.errors import HostUnknownError, StreamError
+from pyfire.stream.errors import HostUnknownError, StreamError, UnsupportedVersionError
 
 
 class TagHandler(object):
@@ -103,12 +103,20 @@ class TagHandler(object):
             if self.hostname not in config.getlist("listeners", "domains"):
                 raise HostUnknownError
 
+            remote_version = attrs.getValue("version")
+            if remote_version is not None:
+                if remote_version != "1.0":
+                    raise UnsupportedVersionError
+
             # Stream restart
             stream = ET.Element("stream:stream")
             stream.set("xmlns", attrs.getValue("xmlns"))
             stream.set("from", self.hostname)
             stream.set("id", uuid.uuid4().hex)
-            stream.set("version", "1.0")
+            # only include version in response if client sent its max supported
+            # version (RFC6120 Section 4.7.5)
+            if remote_version is not None:
+                stream.set("version", "1.0")
             stream.set("xml:lang", "en")
             stream.set("xmlns:stream", "http://etherx.jabber.org/streams")
             start_stream = """<?xml version="1.0"?>""" + ET.tostring(stream)

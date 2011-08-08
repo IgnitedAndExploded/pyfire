@@ -15,6 +15,7 @@ import warnings
 from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry
 from pyfire.auth.backends import DummyTrueValidator
 from pyfire.stream.elements import TagHandler
+from pyfire.stream import errors
 from pyfire.tests import PyfireTestCase
 
 
@@ -73,3 +74,14 @@ class TestTagHandler(PyfireTestCase):
                 """" version="1.0" xml:lang="en" xmlns="jabber:client" """ +
                 """xmlns:stream="http://etherx.jabber.org/streams" >"""
                 ))
+
+    def test_bad_stream_version(self):
+        attrs = {
+            'to': 'localhost',
+            'xmlns': 'jabber:client',
+            'xmlns:stream': 'http://etherx.jabber.org/streams',
+            'version': '11.1'
+        }
+        attrs = MockAttr(attrs)
+        with self.assertRaises(errors.UnsupportedVersionError) as cm:
+            self.taghandler.streamhandler(attrs)
