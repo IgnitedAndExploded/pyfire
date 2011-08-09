@@ -9,14 +9,18 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from pyfire.stream.errors import StreamError
+from pyfire.errors import XMPPProtocolError
 
 
-class AuthenticationError(StreamError):
+class AuthenticationError(XMPPProtocolError):
     """Raised on any authentication related error"""
 
-    def __init__(self, errorname=None):
-        self.errorname = errorname
+    def __init__(self, error_namespace, error_name=None):
+        XMPPProtocolError.__init__(self,
+                            "failure",
+                            error_namespace,
+                            error_name
+                        )
 
 
 class AuthenticationHandler(object):

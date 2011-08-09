@@ -10,22 +10,20 @@
 """
 
 import xml.etree.ElementTree as ET
+from pyfire.errors import XMPPProtocolError
 
 
-class StreamError(Exception):
+class StreamError(XMPPProtocolError):
     """Base class for all stream errors that are
        caused while document parsing
     """
 
-    def __init__(self, errorname=None):
-        self.errorname = errorname
-        self.element = ET.Element("stream:error")
-        self.element.set("xmlns", "urn:ietf:params:xml:ns:xmpp-streams")
-
-    def __unicode__(self):
-        if self.errorname is not None:
-            self.element.append(ET.Element(self.errorname))
-        return unicode(ET.tostring(self.element))
+    def __init__(self, error_name=None):
+        XMPPProtocolError.__init__(self,
+                            "stream:error",
+                            "urn:ietf:params:xml:ns:xmpp-streams",
+                            error_name
+                            )
 
 
 class BadFormatError(StreamError):

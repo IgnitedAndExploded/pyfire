@@ -19,12 +19,11 @@ from pyfire.auth.backends import InvalidAuthenticationError
 class SASLError(AuthenticationError):
     """generic SASL exception"""
 
-    def __unicode__(self):
-        self.element = ET.Element("failure")
-        self.element.set("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
-        if self.errorname:
-            self.element.append(ET.Element(self.errorname))
-        return ET.tostring(self.element)
+    def __init__(self, error_name=None):
+        AuthenticationError.__init__(self,
+                                "urn:ietf:params:xml:ns:xmpp-sasl",
+                                error_name
+                            )
 
 
 class AbortedError(SASLError):
