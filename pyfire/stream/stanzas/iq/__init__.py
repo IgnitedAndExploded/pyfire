@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.stream.elements.iq
+    pyfire.stream.stanzas.iq
     ~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Handles XMPP iq packets
@@ -10,7 +10,7 @@
 """
 
 import xml.etree.ElementTree as ET
-from pyfire.stream.elements.iq.query import Query
+from pyfire.stream.stanzas.iq.query import Query
 
 
 class Iq(object):

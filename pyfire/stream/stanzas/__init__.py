@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.stream.elements
+    pyfire.stream.stanzas
     ~~~~~~~~~~~~~~~~~~~~~~
 
     Process stream events and redirect to tag handlers
@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 
 import pyfire.configuration as config
 from pyfire.jid import JID
-from pyfire.stream.elements import iq, message, presence
+from pyfire.stream.stanzas import iq, message, presence
 from pyfire.stream.errors import *
 
 

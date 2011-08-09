@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 
 from pyfire.logger import Logger
 from pyfire.stream import processor
-from pyfire.stream.elements import TagHandler
+from pyfire.stream.stanzas import TagHandler
 from pyfire.stream.errors import StreamError
 
 log = Logger(__name__)

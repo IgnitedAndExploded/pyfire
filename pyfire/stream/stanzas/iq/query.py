@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.stream.elements.iq.query
+    pyfire.stream.stanzas.iq.query
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Handles XMPP iq-query sub frames

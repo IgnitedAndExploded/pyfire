@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.stream.elements.presence
+    pyfire.stream.stanzas.presence
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     This module handles XMPP presence packets

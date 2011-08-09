@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.stream.elements.message
+    pyfire.stream.stanzas.message
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     This module handles XMPP message frames

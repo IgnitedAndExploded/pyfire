@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pyfire.tests.stream.elements.test_handler
+    pyfire.tests.stream.stanzas.test_handler
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Tests for Tag Handler
@@ -14,7 +14,7 @@ import warnings
 
 from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry
 from pyfire.auth.backends import DummyTrueValidator
-from pyfire.stream.elements import TagHandler
+from pyfire.stream.stanzas import TagHandler
 from pyfire.stream import errors
 from pyfire.tests import PyfireTestCase
 
