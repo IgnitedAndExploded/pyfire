@@ -3,7 +3,7 @@
     pyfire.stream.errors
     ~~~~~~~~~~~~~~~~~~~~
 
-    Holds all Errors/Exceptions defined in RFC6121 Section 4.9.3
+    Holds all Errors/Exceptions defined in RFC6120 Section 4.9.3
 
     :copyright: 2011 by the pyfire Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
