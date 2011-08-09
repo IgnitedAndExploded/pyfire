@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 import pyfire.configuration as config
 from pyfire.jid import JID
 from pyfire.stream.elements import iq, message, presence
-from pyfire.stream.errors import HostUnknownError, StreamError, UnsupportedVersionError
+from pyfire.stream.errors import *
 
 
 class TagHandler(object):
@@ -103,24 +103,31 @@ class TagHandler(object):
             if self.hostname not in config.getlist("listeners", "domains"):
                 raise HostUnknownError
 
-            try:
-                if attrs.getValue("version") != "1.0":
-                    raise UnsupportedVersionError
-                include_version = True
-            except KeyError:
-                include_version = False
-
             # Stream restart
             stream = ET.Element("stream:stream")
             stream.set("xmlns", attrs.getValue("xmlns"))
             stream.set("from", self.hostname)
             stream.set("id", uuid.uuid4().hex)
-            # only include version in response if client sent its max supported
-            # version (RFC6120 Section 4.7.5)
-            if include_version:
-                stream.set("version", "1.0")
             stream.set("xml:lang", "en")
             stream.set("xmlns:stream", "http://etherx.jabber.org/streams")
+
+            # only include version in response if client sent its max supported
+            # version (RFC6120 Section 4.7.5)
+            try:
+                if attrs.getValue("version") != "1.0":
+                    raise UnsupportedVersionError
+                stream.set("version", "1.0")
+            except KeyError:
+                pass
+
+            try:
+                from_jid = JID(attrs.getValue("from"))
+                stream.set("to", unicode(from_jid))
+            except ValueError:
+                raise InvalidFromError
+            except KeyError:
+                pass
+
             start_stream = """<?xml version="1.0"?>""" + ET.tostring(stream)
             # Element has subitems but are added later to the stream,
             # so don't mark it a single element

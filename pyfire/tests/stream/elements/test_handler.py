@@ -90,8 +90,43 @@ class TestTagHandler(PyfireTestCase):
         attrs = {
             'to': 'localhost',
             'xmlns': 'jabber:client',
-            'xmlns:stream': 'http://etherx.jabber.org/streams',
+            'xmlns:stream': 'http://etherx.jabber.org/streams'
         }
         attrs = MockAttr(attrs)
         self.taghandler.streamhandler(attrs)
         self.assertFalse('" version="' in self.connection.strings[0])
+
+    def test_streaminit_no_from(self):
+        attrs = {
+            'to': 'localhost',
+            'xmlns': 'jabber:client',
+            'xmlns:stream': 'http://etherx.jabber.org/streams',
+            'version': '1.0'
+        }
+        attrs = MockAttr(attrs)
+        self.taghandler.streamhandler(attrs)
+        self.assertFalse('to="' in self.connection.strings[0])
+
+    def test_streaminit_has_from(self):
+        attrs = {
+            'from': 'testuser@localhost',
+            'to': 'localhost',
+            'xmlns': 'jabber:client',
+            'xmlns:stream': 'http://etherx.jabber.org/streams',
+            'version': '1.0'
+        }
+        attrs = MockAttr(attrs)
+        self.taghandler.streamhandler(attrs)
+        self.assertTrue('to="' in self.connection.strings[0])
+
+    def test_streaminit_invalid_from(self):
+        attrs = {
+            'from': '@localhost',
+            'to': 'localhost',
+            'xmlns': 'jabber:client',
+            'xmlns:stream': 'http://etherx.jabber.org/streams',
+            'version': '1.0'
+        }
+        attrs = MockAttr(attrs)
+        with self.assertRaises(errors.InvalidFromError) as cm:
+            self.taghandler.streamhandler(attrs)
