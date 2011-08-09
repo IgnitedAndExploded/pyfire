@@ -24,6 +24,7 @@ class StreamError(XMPPProtocolError):
                             "urn:ietf:params:xml:ns:xmpp-streams",
                             error_name
                             )
+        self.unrecoverable = True
 
 
 class BadFormatError(StreamError):

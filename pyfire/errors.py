@@ -21,6 +21,8 @@ class XMPPProtocolError(Exception):
         self.error_name = error_name
         self.element = ET.Element(error_element)
         self.element.set("xmlns", error_namespace)
+        # per default all errors are recoverable
+        self.unrecoverable = False
 
     def __unicode__(self):
         if self.error_name is not None:
