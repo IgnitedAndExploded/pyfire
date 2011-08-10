@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 import pyfire.configuration as config
 from pyfire.jid import JID
 from pyfire.stream.stanzas import iq, message, presence
+from pyfire.services import router, localdomain
 from pyfire.stream.errors import *
 
 
@@ -31,6 +32,13 @@ class TagHandler(object):
         self.hostname = None
 
         self.authenticated = False
+
+        # create stanza router and register a localdomain service for each domain
+        # we serve
+        self.service_router = router.Router()
+        local_domain_service = localdomain.LocalDomainService()
+        for local_domain in config.getlist("listeners", "domains"):
+            self.service_router.register_service(local_domain, local_domain_service)
 
         self.iq = iq.Iq(self)
         self.message = message.Message(self)
