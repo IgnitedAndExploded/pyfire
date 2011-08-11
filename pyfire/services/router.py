@@ -54,12 +54,13 @@ class Router(object):
         # if no to is given its localdomain
         if to is None:
             log.debug("no to specified, routing to first local domain")
-            destination_domain = config.getlist("listeners", "domains")[0]
-        else:
-            destination_domain = JID(to).domain
+            to = config.getlist("listeners", "domains")[0]
+            element_tree.set("to", to)
+
+        destination_domain = JID(to).domain
 
         destination = self.routing_table[destination_domain]
 
         log.debug("routing stanza to domain %s (%s)" %
                     (destination_domain, destination.__class__.__name__))
-        destination.process(element_tree)
+        return destination.process(element_tree)

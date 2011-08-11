@@ -17,14 +17,11 @@ from xml.etree.ElementTree import Element, tostring
 class Presence(object):
     """This Class handles <resence> XMPP frames"""
 
-    def __init__(self, tag_handler):
+    def __init__(self):
         super(Presence, self).__init__()
-
-        self.tag_handler = tag_handler
 
     def handle(self, tree):
         """handler for resence requests,
            returns a response that should be sent back"""
         response = Element("presence")
-        response.set("from", self.tag_handler.hostname)
         return response

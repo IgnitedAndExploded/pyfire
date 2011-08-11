@@ -14,7 +14,6 @@ import xml.etree.ElementTree as ET
 
 import pyfire.configuration as config
 from pyfire.jid import JID
-from pyfire.stream.stanzas import iq, message, presence
 from pyfire.services import router, localdomain
 from pyfire.stream.errors import *
 
@@ -40,10 +39,6 @@ class TagHandler(object):
         for local_domain in config.getlist("listeners", "domains"):
             self.service_router.register_service(local_domain, local_domain_service)
 
-        self.iq = iq.Iq(self)
-        self.message = message.Message(self)
-        self.presence = presence.Presence(self)
-
     def contenthandler(self, tree):
         """Handles an incomming content tree"""
 
@@ -65,12 +60,11 @@ class TagHandler(object):
                 self.authenticated = True
                 response_element = ET.Element("success")
                 response_element.set("xmlns", namespace)
-            elif tree.tag == "iq":
-                response_element = self.iq.handle(tree)
-            elif tree.tag == "message":
-                response_element = self.message.handle(tree)
-            elif tree.tag == "presence":
-                response_element = self.presence.handle(tree)
+            else:
+                response_element = self.service_router.route_stanza(tree)
+                ## extract bind responses to set local, validated jid
+                if response_element.find("bind/jid") is not None:
+                    self.jid = JID(response_element.find("bind/jid").text)
 
             if response_element is not None:
                 self.send_element(response_element)

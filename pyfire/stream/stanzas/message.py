@@ -17,10 +17,8 @@ from xml.etree.ElementTree import Element, tostring
 class Message(object):
     """Handles <message> XMPP frames"""
 
-    def __init__(self, tag_handler):
+    def __init__(self):
         super(Message, self).__init__()
-
-        self.tag_handler = tag_handler
 
     def handle(self, tree):
         """handler for message requests"""
