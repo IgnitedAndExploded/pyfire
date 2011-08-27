@@ -79,6 +79,7 @@ class TagHandler(object):
                 self.send_element(response_element)
         except StreamError, e:
             self.send_string(unicode(e))
+            self.connection.stop_connection()
 
     def add_auth_options(self, feature_element):
         """Add supported auth mechanisms to feature element"""
