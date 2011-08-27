@@ -108,3 +108,9 @@ class StreamProcessor(object):
             self.parser.close()
         except SAXParseException:
             pass
+
+    @property
+    def depth(self):
+        """Returns current parser depth"""
+
+        return self.processor.depth

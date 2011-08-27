@@ -18,11 +18,12 @@ sys.path.append(path)
 
 import errno
 import functools
-from tornado import ioloop
-from tornado import iostream
-from tornado.stack_context import StackContext
 import contextlib
 import socket
+
+from zmq.eventloop import ioloop
+from tornado import iostream
+from tornado.stack_context import StackContext
 
 from pyfire import configuration as config
 from pyfire.server import XMPPServer, XMPPConnection

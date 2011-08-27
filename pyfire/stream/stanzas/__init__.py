@@ -12,13 +12,19 @@
 import uuid
 import xml.etree.ElementTree as ET
 
+import zmq
+from zmq.eventloop.zmqstream import ZMQStream
+
 import pyfire.configuration as config
 from pyfire.jid import JID
+<<<<<<< HEAD
 <<<<<<< HEAD
 from pyfire.services import router, localdomain
 =======
 from pyfire.stream.stanzas import iq, message, presence
 >>>>>>> Drop stanza router, we will use zeromq for that
+=======
+>>>>>>> Switch from single-process to zeromq based iq processing
 from pyfire.stream.errors import *
 
 
@@ -35,18 +41,9 @@ class TagHandler(object):
 
         self.authenticated = False
 
-<<<<<<< HEAD
-        # create stanza router and register a localdomain service for each domain
-        # we serve
-        self.service_router = router.Router()
-        local_domain_service = localdomain.LocalDomainService()
-        for local_domain in config.getlist("listeners", "domains"):
-            self.service_router.register_service(local_domain, local_domain_service)
-=======
-        self.iq = iq.Iq(self)
-        self.message = message.Message(self)
-        self.presence = presence.Presence(self)
->>>>>>> Drop stanza router, we will use zeromq for that
+        self.zmq_context = zmq.Context()
+        self.pub_stanza = self.zmq_context.socket(zmq.PUB)
+        self.pub_stanza.bind(config.get('ipc','to_processor'))
 
     def contenthandler(self, tree):
         """Handles an incomming content tree"""
@@ -54,11 +51,12 @@ class TagHandler(object):
         # set/replace the from attribute in stanzas as required
         # by RFC 6120 Section 8.1.2.1
         if self.authenticated:
-            tree.set("from", self.jid)
+            tree.set("from", str(self.jid))
 
         try:
-            response_element = None
             if tree.tag == "auth":
+                if self.authenticated:
+                    raise NotAllowedError
                 registry = self.connection.auth_registry
                 namespace = tree.get('xmlns')
                 handler = registry.request_handler(namespace)
@@ -69,14 +67,20 @@ class TagHandler(object):
                 self.authenticated = True
                 response_element = ET.Element("success")
                 response_element.set("xmlns", namespace)
-            else:
-                response_element = self.service_router.route_stanza(tree)
-                ## extract bind responses to set local, validated jid
-                if response_element.find("bind/jid") is not None:
-                    self.jid = JID(response_element.find("bind/jid").text)
-
-            if response_element is not None:
                 self.send_element(response_element)
+
+                processed_stanzas = self.zmq_context.socket(zmq.SUB)
+                processed_stanzas.connect(config.get('ipc','to_client'))
+                processed_stanzas.setsockopt(zmq.SUBSCRIBE, "")
+
+                self.processed_stream = ZMQStream(processed_stanzas, self.connection.stream.io_loop)
+                self.processed_stream.on_recv(self.send_string)
+
+            elif tree.tag in ["iq", "message", "presence"]:
+                if not self.authenticated:
+                    raise NotAuthorizedError
+                self.pub_stanza.send(ET.tostring(tree))
+
         except StreamError, e:
             self.send_string(unicode(e))
             self.connection.stop_connection()
