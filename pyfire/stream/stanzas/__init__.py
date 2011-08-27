@@ -71,7 +71,9 @@ class TagHandler(object):
             elif tree.tag in ["iq", "message", "presence"]:
                 if not self.authenticated:
                     raise NotAuthorizedError
-                self.pub_stanza.send(ET.tostring(tree))
+                stanza = ET.tostring(tree)
+                log.debug("Publishing Stanza: %s" % stanza)
+                self.pub_stanza.send(stanza)
 
         except StreamError, e:
             self.send_string(unicode(e))
