@@ -17,14 +17,6 @@ from zmq.eventloop.zmqstream import ZMQStream
 
 import pyfire.configuration as config
 from pyfire.jid import JID
-<<<<<<< HEAD
-<<<<<<< HEAD
-from pyfire.services import router, localdomain
-=======
-from pyfire.stream.stanzas import iq, message, presence
->>>>>>> Drop stanza router, we will use zeromq for that
-=======
->>>>>>> Switch from single-process to zeromq based iq processing
 from pyfire.stream.errors import *
 
 
