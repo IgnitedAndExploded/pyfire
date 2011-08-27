@@ -26,9 +26,8 @@ log = Logger(__name__)
 class XMPPServer(object):
     """A non-blocking, single-threaded XMPP server."""
 
-    def __init__(self, stream_callback, io_loop=None):
+    def __init__(self, io_loop=None):
 
-        self.stream_callback = stream_callback
         self.io_loop = io_loop
         self._sockets = {}  # fd -> socket object
         self._started = False
