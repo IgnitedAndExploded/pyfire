@@ -32,7 +32,8 @@ from pyfire.server import XMPPServer, XMPPConnection
 def start_client_listener():
     io_loop = ioloop.IOLoop.instance()
     server = XMPPServer(io_loop)
-    server.bind(config.get('listeners', 'clientport'), config.get('listeners', 'ip'))
+    server.bind(config.get('listeners', 'clientport'),
+                config.get('listeners', 'ip'))
     server.start()
     try:
         io_loop.start()
