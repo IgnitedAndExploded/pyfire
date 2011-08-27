@@ -37,7 +37,7 @@ class Contact(object):
             element.set("approved", self.approved)
         if not self.ask == None:
             element.set("ask", self.ask)
-        element.set("jid", str(self.jid))
+        element.set("jid", str(self.jid.bare))
         if not self.name == None:
             element.set("name", self.name)
         if not self.subscription == None:
