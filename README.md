@@ -6,7 +6,8 @@ Having used some other implementations in the past, we decided to roll our own. 
 Dependencies
 ============
 
-At the moment you just need Python 2.6 with ElementTree 1.3 or Python 2.7
+- Python 2.6 with ElementTree 1.3 or Python 2.7
+- Tornado
 
 Implemented RFC and XEP
 =======================
