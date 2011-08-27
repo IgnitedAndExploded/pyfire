@@ -15,39 +15,57 @@ import os.path
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(path)
 
-import SocketServer
+
+import errno
+import functools
+from tornado import ioloop
+from tornado import iostream
+from tornado.stack_context import StackContext
+import contextlib
+import socket
 
 from pyfire import configuration as config
-from pyfire.auth.backends import DummyTrueValidator
-from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry
-from pyfire.stream.sockethandler import XMPPSocketHandler
+from pyfire.server import XMPPServer, XMPPConnection
 
 
-class XMPPTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    def __init__(self,
-                 sockaddr=(config.get('listeners', 'ip'),
-                           config.getint('listeners', 'clientport')),
-                 handler=XMPPSocketHandler):
-        SocketServer.TCPServer.__init__(self, sockaddr, handler)
+# TODO: move to Server!!
+def check_for_closed_connections():
+    print "checking for closed connections"
+    streamlist = connections.keys()
+    for stream in streamlist:
+        if stream.closed():
+            print "detected dead stream"
+            del connections[stream]
+            if len(connections) == 0:
+                print "stopping checker"
+                checker.stop()
 
-        # init auth backends
-        validation_registry = ValidationRegistry()
-        self.auth_registry = AuthHandlerRegistry(validation_registry)
+checker = ioloop.PeriodicCallback(check_for_closed_connections,5000)
 
-        validator = DummyTrueValidator()
-        validation_registry.register('dummy', validator)
-
-
-def main():
-    # starts the XMPP listener...
-    server = XMPPTCPServer()
-    print "Listening on %s:%s" % server.server_address
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        server.shutdown()
+connections = {}
+def connection_ready(sock, fd, events):
+    i=1
+    while True:
+        try:
+            connection, address = sock.accept()
+        except socket.error, e:
+            if e.args[0] not in (errno.EWOULDBLOCK, errno.EAGAIN):
+                raise
+            return
+        connection.setblocking(0)
+        io_loop = ioloop.IOLoop.instance()
+        stream = iostream.IOStream(connection, io_loop=io_loop)
+        connections[stream] = XMPPConnection(stream)
+        if not checker._running:
+            checker.start()
 
 if __name__ == '__main__':
-    main()
+    io_loop = ioloop.IOLoop.instance()
+    server = XMPPServer(connection_ready, io_loop)
+    server.bind(config.get('listeners', 'clientport'), config.get('listeners', 'ip'))
+    server.start()
+    try:
+        io_loop.start()
+    except (KeyboardInterrupt, SystemExit):
+        io_loop.stop()
+        print "exited cleanly"

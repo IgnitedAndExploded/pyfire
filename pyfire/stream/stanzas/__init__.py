@@ -24,7 +24,6 @@ class TagHandler(object):
     def __init__(self, connection):
         super(TagHandler, self).__init__()
         self.connection = connection
-        self.server = connection.server
         self.send_element = connection.send_element
         self.send_string = connection.send_string
 
@@ -55,7 +54,7 @@ class TagHandler(object):
         try:
             response_element = None
             if tree.tag == "auth":
-                registry = self.server.auth_registry
+                registry = self.connection.auth_registry
                 namespace = tree.get('xmlns')
                 handler = registry.request_handler(namespace)
                 handler.process(tree)
@@ -79,7 +78,7 @@ class TagHandler(object):
 
     def add_auth_options(self, feature_element):
         """Add supported auth mechanisms to feature element"""
-        registry = self.server.auth_registry
+        registry = self.connection.auth_registry
 
         for mechtype in registry.supported_namespaces:
             mechtype_element = ET.SubElement(feature_element, "mechanisms")
