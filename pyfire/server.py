@@ -176,7 +176,10 @@ class XMPPConnection(object):
             self.last_seen = datetime.now()
             log.debug("Processing chunk: %s" % data)
             self.parser.feed(data)
-            self.stream.read_bytes(1, self._read_char)
+            if self.parser.depth >= 2:
+                self.stream.read_until(">", self._read_xml)
+            else:
+                self.stream.read_bytes(1, self._read_char)
         except IOError:
             self.done()
 
