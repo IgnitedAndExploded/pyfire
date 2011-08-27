@@ -17,7 +17,10 @@ from zmq.eventloop.zmqstream import ZMQStream
 
 import pyfire.configuration as config
 from pyfire.jid import JID
+from pyfire.logger import Logger
 from pyfire.stream.errors import *
+
+log = Logger(__name__)
 
 
 class TagHandler(object):
