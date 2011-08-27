@@ -3,6 +3,8 @@ import errno
 import fcntl
 import os
 import socket
+import sys
+import traceback
 import xml.etree.ElementTree as ET
 
 
@@ -120,8 +122,15 @@ class XMPPServer(object):
                 stream = iostream.IOStream(connection, io_loop=self.io_loop)
                 log.debug("Starting new connection for address %s" % str(address))
                 self._connections.append(XMPPConnection(stream, address))
-            except:
-                log.error("Error in connection callback")#, exc_info=True)
+            except Exception, e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                log.error("Error in connection callback, %s" % str(e))
+                for line in traceback.format_tb(exc_traceback):
+                    if line.find("\n") >= 0:
+                        for subline in line.split("\n"):
+                            log.error(subline)
+                    else:
+                        log.error(line.rstrip("\n"))
 
 
 class XMPPConnection(object):
