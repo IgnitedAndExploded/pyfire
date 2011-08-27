@@ -19,23 +19,18 @@ from pyfire.stream import errors
 from pyfire.tests import PyfireTestCase
 
 
-class MockServer(object):
-    def __init__(self):
-        self.validator_registry = ValidationRegistry()
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            handler1 = DummyTrueValidator()
-            self.validator_registry.register('dummy', handler1)
-        self.auth_registry = AuthHandlerRegistry(self.validator_registry)
-
-
 class MockConnection(object):
     def __init__(self):
 
         self.last_element = None
         self.last_string = None
         self.strings = []
-        self.server = MockServer()
+        self.validator_registry = ValidationRegistry()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            handler1 = DummyTrueValidator()
+            self.validator_registry.register('dummy', handler1)
+        self.auth_registry = AuthHandlerRegistry(self.validator_registry)
 
     def send_element(self, element):
         self.last_element = element
