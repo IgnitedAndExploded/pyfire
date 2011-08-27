@@ -32,6 +32,7 @@ class XMPPServer(object):
         self._sockets = {}  # fd -> socket object
         self._started = False
         self._connections = []
+        self.checker = ioloop.PeriodicCallback(self.check_for_closed_connections, 30000)
 
     def listen(self, port, address=""):
         """Binds to the given port and starts the server in a single process.
@@ -83,6 +84,7 @@ class XMPPServer(object):
             sock.setblocking(0)
             sock.bind(sockaddr)
             sock.listen(128)
+            log.info("Starting to listen on IP %s Port %s for connections" % sockaddr)
             self._sockets[sock.fileno()] = sock
             if self._started:
                 self.io_loop.add_handler(sock.fileno(), self._handle_events,
@@ -119,8 +121,10 @@ class XMPPServer(object):
             try:
                 #import pdb;pdb.set_trace()
                 stream = iostream.IOStream(connection, io_loop=self.io_loop)
-                log.debug("Starting new connection for address %s" % str(address))
+                log.info("Starting new connection for client connection from %s:%s" % address)
                 self._connections.append(XMPPConnection(stream, address))
+                if not self.checker._running:
+                    self.checker.start()
             except Exception, e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 log.error("Error in connection callback, %s" % str(e))
@@ -130,6 +134,16 @@ class XMPPServer(object):
                             log.error(subline)
                     else:
                         log.error(line.rstrip("\n"))
+
+    def check_for_closed_connections():
+        log.debug("checking for closed connections")
+        for connection in self._connections:
+            if connection.closed():
+                log.debug("detected dead stream")
+                del connections[stream]
+                if len(connections) == 0:
+                    log.debug("stopping checker")
+                    self.checker.stop()
 
 
 class XMPPConnection(object):
@@ -207,3 +221,8 @@ class XMPPConnection(object):
         """Does cleanup work"""
 
         self.stream.close()
+
+    def closed(self):
+        """Checks if underlying stream is closed"""
+
+        return self.stream.closed()
