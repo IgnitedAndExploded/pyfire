@@ -22,7 +22,7 @@ import contextlib
 import socket
 import thread
 
-from zmq.eventloop import ioloop
+from tornado import ioloop
 from tornado import iostream
 from tornado.stack_context import StackContext
 
