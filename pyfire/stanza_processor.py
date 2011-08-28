@@ -45,8 +45,8 @@ class StanzaProcessor(object):
         self.pub_socket.bind(self.pub_url)
         sub_socket = self.ctx.socket(zmq.SUB)
         sub_socket.connect(self.sub_url)
-        # TODO: only subscribe to local domains
-        sub_socket.setsockopt(zmq.SUBSCRIBE, '')
+        for domain in self.local_domains:
+            sub_socket.setsockopt(zmq.SUBSCRIBE, domain)
         substream = zmqstream.ZMQStream(sub_socket, self.loop)
         substream.on_recv(self.handle_stanza)
 
