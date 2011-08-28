@@ -163,7 +163,6 @@ class XMPPConnection(object):
 
         # TODO: Find a better place for this
         validation_registry = ValidationRegistry()
-        self.auth_registry = AuthHandlerRegistry(validation_registry)
 
         validator = DummyTrueValidator()
         validation_registry.register('dummy', validator)

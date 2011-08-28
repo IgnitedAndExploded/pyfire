@@ -9,57 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from pyfire.auth.backends import InvalidAuthenticationError
-from pyfire.auth.sasl import SASLAuthHandler
 
-provided_handlers = {
-    'urn:ietf:params:xml:ns:xmpp-sasl': SASLAuthHandler,
-}
-
-
-class UnknownAuthenticationType(Exception):
-    """Raised when an unknown authentication mechanism is requested"""
-    pass
-
-
-class AuthHandlerRegistry(object):
-    """Registry for known handlers"""
-
-    def __init__(self, check_registry):
-        self.check_registry = check_registry
-        self.known_handlers = {}
-
-        for k, v in provided_handlers.iteritems():
-            self.register(k, v(self))
-
-    def register(self, namespace, handler):
-        """Registers new handler"""
-
-        self.known_handlers[namespace] = handler
-        handler.check_registry = self.check_registry
-
-    def unregister(self, namespace):
-        """Unregisters given handler"""
-
-        try:
-            del self.known_handlers[namespace]
-        except KeyError:
-            raise UnknownAuthenticationType(namespace)
-
-    def request_handler(self, namespace):
-        """Returns a handler for given namespace"""
-
-        try:
-            return self.known_handlers[namespace]
-        except KeyError:
-            raise UnknownAuthenticationType(namespace)
-
-    @property
-    def supported_namespaces(self):
-        """Lists supported namespaces"""
-
-        return frozenset([handler.namespace for handler
-                          in self.known_handlers.values()])
 
 
 class ValidationRegistry(object):

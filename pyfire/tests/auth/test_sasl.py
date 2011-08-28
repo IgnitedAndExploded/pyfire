@@ -16,7 +16,6 @@ from pyfire.auth.sasl import SASLAuthHandler, MalformedRequestError, NotAuthoriz
 from pyfire.auth.backends import InvalidAuthenticationError
 from pyfire.tests import PyfireTestCase
 
-
 class MockValidatorRegistry(object):
 
     success = True
@@ -37,17 +36,14 @@ class MockValidatorRegistry(object):
 class TestSASLAuthHandler(PyfireTestCase):
 
     def test_plain_auth_good(self):
-        MockValidatorRegistry.success = True
-        handler = SASLAuthHandler(MockValidatorRegistry())
+        handler = SASLAuthHandler()
         auth_element = ET.Element("auth")
         auth_element.set("mechanism", "PLAIN")
         auth_element.text = b64encode(unichr(0).join(["zid", "user", "pass"]))
         handler.process(auth_element)
 
     def test_plain_auth_bad(self):
-        MockValidatorRegistry.success = False
-        registry = MockValidatorRegistry()
-        handler = SASLAuthHandler(MockValidatorRegistry())
+        handler = SASLAuthHandler()
         auth_element = ET.Element("auth")
         auth_element.set("mechanism", "PLAIN")
         auth_element.text = b64encode(unichr(0).join(["zid", "user", "pass"]))
@@ -55,7 +51,7 @@ class TestSASLAuthHandler(PyfireTestCase):
             handler.process(auth_element)
 
     def test_plain_auth_baddata(self):
-        handler = SASLAuthHandler(MockValidatorRegistry())
+        handler = SASLAuthHandler()
         auth_element = ET.Element("auth")
         auth_element.set("mechanism", "PLAIN")
         auth_element.text = "something\0totallywronghere"

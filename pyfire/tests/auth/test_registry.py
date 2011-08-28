@@ -14,8 +14,7 @@ import xml.etree.ElementTree as ET
 import warnings
 
 from pyfire.tests import PyfireTestCase
-from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry, \
-                                 UnknownAuthenticationType
+from pyfire.auth.registry import ValidationRegistry
 from pyfire.auth.backends import DummyTrueValidator, DummyFalseValidator, \
                                  InvalidAuthenticationError
 
@@ -108,31 +107,3 @@ class TestValidationRegistry(PyfireTestCase):
             self.assertFalse(handler2._validated)
             self.assertEqual(self.registry.validate_token('token'), 'dummy')
             self.assertFalse(handler2._validated)
-
-
-class TestAuthHandlerRegistry(PyfireTestCase):
-    def setUp(self):
-        self.validator_registry = ValidationRegistry()
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            handler1 = DummyTrueValidator()
-            self.validator_registry.register('dummy', handler1)
-        self.registry = AuthHandlerRegistry(self.validator_registry)
-
-    def test_default_namespaces(self):
-        known_namespaces = frozenset(['urn:ietf:params:xml:ns:xmpp-sasl', ])
-        self.assertEqual(self.registry.supported_namespaces, known_namespaces)
-
-    def test_request_handler_good(self):
-        self.registry.request_handler('urn:ietf:params:xml:ns:xmpp-sasl')
-
-    def test_request_handler_bad(self):
-        with self.assertRaises(UnknownAuthenticationType) as cm:
-            self.registry.request_handler('should-fail')
-
-    def test_user_validation(self):
-        handler = self.registry.request_handler('urn:ietf:params:xml:ns:xmpp-sasl')
-        auth_element = ET.Element("auth")
-        auth_element.set("mechanism", "PLAIN")
-        auth_element.text = b64encode(unichr(0).join(["zid", "user", "pass"]))
-        handler.process(auth_element)

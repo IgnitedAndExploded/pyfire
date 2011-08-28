@@ -32,9 +32,8 @@ class AuthenticationHandler(object):
 
     check_registry = None
 
-    def __init__(self, check_registry):
+    def __init__(self):
         super(AuthenticationHandler, self).__init__()
-        self.check_registry = check_registry
 
     def process(self, auth_element):
         """Processes request for auth_element"""

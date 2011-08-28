@@ -12,7 +12,7 @@
 import xml.etree.ElementTree as ET
 import warnings
 
-from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry
+from pyfire.auth.registry import ValidationRegistry
 from pyfire.auth.backends import DummyTrueValidator
 from pyfire.stream.stanzas import TagHandler
 from pyfire.stream import errors
@@ -30,7 +30,6 @@ class MockConnection(object):
             warnings.simplefilter("ignore")
             handler1 = DummyTrueValidator()
             self.validator_registry.register('dummy', handler1)
-        self.auth_registry = AuthHandlerRegistry(self.validator_registry)
 
     def send_element(self, element):
         self.last_element = element
