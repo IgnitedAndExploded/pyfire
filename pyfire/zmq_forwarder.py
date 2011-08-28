@@ -39,9 +39,7 @@ class ZMQForwarder(object):
 
     def start(self):
         """Starts the IOloop"""
-
-        if self.own_loop:
-            self.loop.start()
+        self.loop.start()
 
     def handle_stanza(self, msg):
         """Callback handler used for forwarding received stanzas"""
