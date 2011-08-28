@@ -75,4 +75,4 @@ class StanzaProcessor(object):
                         self.pub_socket.send(cPickle.dumps(response))
                 except StanzaError, e:
                     # send caught errors back to sender
-                    self.pub_socket.send_multipart(e.element)
+                    self.pub_socket.send(cPickle.dumps(e.element))
