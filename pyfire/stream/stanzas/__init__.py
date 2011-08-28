@@ -41,8 +41,19 @@ class StanzaPublisher(object):
 
     def __init__(self):
         self.zmq_context = zmq.Context()
+
+        # connect to forwarder/router
+        log.debug('Registering StanzaPublisher at forwarder..')
+        router = self.zmq_context.socket(zmq.REQ)
+        router.connect(config.get('ipc', 'forwarder_command_channel'))
+
+        # TODO: add auth for authenticating us at the forwarder when it supports it
+        router.send(' ')
+        self.pub_url, self.sub_url = router.recv_json()
+        router.close()
+
         self.pub_socket = self.zmq_context.socket(zmq.PUB)
-        self.pub_socket.bind(config.get('ipc','to_router'))
+        self.pub_socket.bind(self.pub_url)
 
     def send(self, topic, msg):
         self.pub_socket.send_multipart([topic, msg])
@@ -87,7 +98,7 @@ class TagHandler(object):
                 self.send_element(response_element)
 
                 processed_stanzas = zmq.Context().socket(zmq.SUB)
-                processed_stanzas.connect(config.get('ipc','to_client'))
+                processed_stanzas.connect(self.publisher.sub_url)
                 processed_stanzas.setsockopt(zmq.SUBSCRIBE, str(self.jid))
 
                 self.processed_stream = ZMQStream(processed_stanzas, self.connection.stream.io_loop)
