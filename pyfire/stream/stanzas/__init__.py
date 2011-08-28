@@ -108,8 +108,10 @@ class TagHandler(object):
                 if not self.authenticated:
                     raise NotAuthorizedError
                 stanza = ET.tostring(tree)
-                log.debug("Publishing Stanza for topic %s: %s" % (tree.get("from"),stanza))
-                self.publisher.send(tree.get("from"), stanza)
+                if tree.get("to") is None:
+                    tree.set("to", str(self.jid.domain))
+                log.debug("Publishing Stanza for topic %s: %s" % (tree.get("to"),stanza))
+                self.publisher.send(tree.get("to"), stanza)
 
         except StreamError, e:
             self.send_string(unicode(e))
