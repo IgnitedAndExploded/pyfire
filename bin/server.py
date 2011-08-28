@@ -30,9 +30,10 @@ from pyfire import configuration as config
 from pyfire import zmq_forwarder, stanza_processor
 from pyfire.auth.backends import DummyTrueValidator
 from pyfire.server import XMPPServer, XMPPConnection
-from pyfire.singletons import get_validation_registry
+from pyfire.singletons import get_validation_registry, get_publisher
 
 def start_client_listener():
+    publisher = get_publisher()
     validation_registry = get_validation_registry()
     validator = DummyTrueValidator()
     validation_registry.register('dummy', validator)
