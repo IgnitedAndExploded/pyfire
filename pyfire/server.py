@@ -31,7 +31,7 @@ class XMPPServer(object):
         self.io_loop = io_loop
         self._sockets = {}  # fd -> socket object
         self._started = False
-        self._connections = []
+        self._connections = {}
         self.checker = ioloop.PeriodicCallback(
             self.check_for_closed_connections, 30000)
 
@@ -124,7 +124,7 @@ class XMPPServer(object):
                 #import pdb;pdb.set_trace()
                 stream = iostream.IOStream(connection, io_loop=self.io_loop)
                 log.info("Starting new connection for client connection from %s:%s" % address)
-                self._connections.append(XMPPConnection(stream, address))
+                self._connections[address] = XMPPConnection(stream, address)
                 if not self.checker._running:
                     self.checker.start()
             except Exception, e:
@@ -137,13 +137,14 @@ class XMPPServer(object):
                     else:
                         log.error(line.rstrip("\n"))
 
-    def check_for_closed_connections():
+    def check_for_closed_connections(self):
         log.debug("checking for closed connections")
-        for connection in self._connections:
+        for address in self._connections.keys():
+            connection = self._connections[address]
             if connection.closed():
-                log.debug("detected dead stream")
-                del connections[stream]
-                if len(connections) == 0:
+                log.debug("detected dead stream/connection: %s:%s" % connection.address)
+                del self._connections[address]
+                if len(self._connections) == 0:
                     log.debug("stopping checker")
                     self.checker.stop()
 
