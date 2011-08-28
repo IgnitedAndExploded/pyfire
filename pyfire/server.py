@@ -194,8 +194,11 @@ class XMPPConnection(object):
     def send_string(self, string):
         """Sends a string to client"""
 
-        log.debug("Sending string to client:" + string)
-        self.stream.write(string)
+        try:
+            self.stream.write(string)
+            log.debug("Sent string to client:" + string)
+        except IOError:
+            pass
 
     def send_element(self, element):
         """Serializes and send an ET Element"""
