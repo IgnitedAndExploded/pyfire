@@ -7,7 +7,7 @@ import sys
 import traceback
 import xml.etree.ElementTree as ET
 
-from tornado import ioloop
+from zmq.eventloop import ioloop
 from tornado import iostream
 from tornado import stack_context
 import zmq
