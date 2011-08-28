@@ -10,6 +10,7 @@
 """
 
 import uuid
+from thread import allocate_lock
 import xml.etree.ElementTree as ET
 
 import zmq
@@ -21,6 +22,30 @@ from pyfire.logger import Logger
 from pyfire.stream.errors import *
 
 log = Logger(__name__)
+
+_publisher = None
+_publisher_lock = allocate_lock()
+
+def get_publisher():
+    """Returns the application publish socket"""
+    global _publisher
+    _publisher_lock.acquire()
+    if _publisher == None:
+        _publisher = StanzaPublisher()
+    _publisher_lock.release()
+    return _publisher
+
+
+class StanzaPublisher(object):
+    """Handles the publish socket"""
+
+    def __init__(self):
+        self.zmq_context = zmq.Context()
+        self.pub_socket = self.zmq_context.socket(zmq.PUB)
+        self.pub_socket.bind(config.get('ipc','to_router'))
+
+    def send(self, topic, msg):
+        self.pub_socket.send_multipart([topic, msg])
 
 
 class TagHandler(object):
@@ -35,10 +60,7 @@ class TagHandler(object):
         self.hostname = None
 
         self.authenticated = False
-
-        self.zmq_context = zmq.Context()
-        self.pub_stanza = self.zmq_context.socket(zmq.PUB)
-        self.pub_stanza.bind(config.get('ipc','to_processor'))
+        self.publisher = get_publisher()
 
     def contenthandler(self, tree):
         """Handles an incomming content tree"""
@@ -64,9 +86,9 @@ class TagHandler(object):
                 response_element.set("xmlns", namespace)
                 self.send_element(response_element)
 
-                processed_stanzas = self.zmq_context.socket(zmq.SUB)
+                processed_stanzas = zmq.Context().socket(zmq.SUB)
                 processed_stanzas.connect(config.get('ipc','to_client'))
-                processed_stanzas.setsockopt(zmq.SUBSCRIBE, "")
+                processed_stanzas.setsockopt(zmq.SUBSCRIBE, str(self.jid))
 
                 self.processed_stream = ZMQStream(processed_stanzas, self.connection.stream.io_loop)
                 self.processed_stream.on_recv(self.send_string)
@@ -75,8 +97,8 @@ class TagHandler(object):
                 if not self.authenticated:
                     raise NotAuthorizedError
                 stanza = ET.tostring(tree)
-                log.debug("Publishing Stanza: %s" % stanza)
-                self.pub_stanza.send(stanza)
+                log.debug("Publishing Stanza for topic %s: %s" % (tree.get("from"),stanza))
+                self.publisher.send(tree.get("from"), stanza)
 
         except StreamError, e:
             self.send_string(unicode(e))

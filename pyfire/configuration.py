@@ -33,7 +33,7 @@ config.add_section('logging')
 config.set('logging', 'global_level', 'ERROR')
 
 config.add_section('ipc')
-config.set('ipc', 'to_processor', 'tcp://127.0.0.1:5556')
+config.set('ipc', 'to_router', 'tcp://127.0.0.1:5556')
 config.set('ipc', 'to_client', 'tcp://127.0.0.1:5557')
 
 config.read(['pyfire.cfg', os.path.expanduser('~/.pyfire.cfg')])
