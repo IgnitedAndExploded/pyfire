@@ -68,7 +68,7 @@ class StanzaProcessor(object):
             return
 
         # TODO: check if we really want to handle the topis set..
-        tree = cPickle.loads(msg[0])
+        tree = cPickle.loads(msg[0].split('\n'))
         log.debug("Received stanza to handle: " + ET.tostring(tree))
 
         try:
