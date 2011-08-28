@@ -93,10 +93,13 @@ class TagHandler(object):
             self.connection.stop_connection()
 
     def publish_stanza(self, tree):
-        if tree.get("to") is None:
-            tree.set("to", str(self.jid.domain))
-        log.debug("Publishing Stanza for topic %s: %s" % (tree.get("from"), ET.tostring(tree)))
-        self.publisher.send(tree.get("from"), cPickle.dumps(tree))
+        to = tree.get("to")
+        if to is None:
+            to = self.jid.domain
+        tree.set("to", to)
+        to = to.encode("utf-8")
+        log.debug("Publishing Stanza for topic %s: %s" % (to, ET.tostring(tree)))
+        self.publisher.send(to, cPickle.dumps(tree))
 
     def masked_send_list(self, msgs):
         """Unmark waiting for a session element if we received another stanza response"""
@@ -109,7 +112,7 @@ class TagHandler(object):
     def send_list(self, msgs):
 
         for msg in msgs:
-            self.send_string(msg)
+            self.send_string(msg.decode("utf-8"))
 
     def set_resource(self, tree):
         """Set a resource on our JID"""

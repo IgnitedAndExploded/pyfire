@@ -77,7 +77,7 @@ class StanzaProcessor(object):
 
             response = self.stanza_handlers[tree.tag].handle(tree)
             if response is not None:
-                self.pub_socket.send_multipart((tree.get("from"), cPickle.dumps(response)))
+                self.pub_socket.send_multipart((str(tree.get("from")), cPickle.dumps(response)))
         except StanzaError, e:
             # send cought errors back to sender
             self.pub_socket.send_multipart((tree.get("from"), unicode(e)))

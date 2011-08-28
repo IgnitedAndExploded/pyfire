@@ -77,7 +77,7 @@ class StanzaPublisher(object):
 
     def send(self, topic, msg):
         with _publisher_lock:
-            self.pub_socket.send_multipart([topic, msg])
+            self.pub_socket.send_multipart([topic, msg.encode("utf-8")])
 
 _validation_registry = None
 _validation_registry_lock = allocate_lock()
