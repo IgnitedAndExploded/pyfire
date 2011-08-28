@@ -14,7 +14,10 @@ import xml.etree.ElementTree as ET
 
 from pyfire.auth import AuthenticationHandler, AuthenticationError
 from pyfire.auth.backends import InvalidAuthenticationError
+from pyfire.logger import Logger
 from pyfire.singletons import get_validation_registry
+
+log = Logger(__name__)
 
 
 class SASLError(AuthenticationError):
