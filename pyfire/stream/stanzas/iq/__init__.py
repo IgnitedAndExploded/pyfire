@@ -30,7 +30,10 @@ class Iq(object):
         iq = ET.Element("iq")
         iq.set("id", tree.get("id"))
         iq.set("type", "result")
-        iq.set("from", tree.get("to"))
+        if tree.get("to") is not None:
+            iq.set("from", tree.get("to"))
+        else:
+            iq.set("from", self.from_jid.domain)
         iq.set("to", tree.get("from"))
         # dispatch to the handler for the given request query
         for req in list(tree):

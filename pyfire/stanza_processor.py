@@ -63,20 +63,16 @@ class StanzaProcessor(object):
         """This actually handles the incomming stamzas"""
         for msg in msgs:
             tree = cPickle.loads(msg.bytes)
-            if tree.get("to") is None:
-                log.warning("to attribute is None at %s" % ET.tostring(tree))
-            else:
-                log.debug("found to attribute: %s " % tree.get("to"))
-                if tree.get("to") in self.local_domains:
-                    log.debug("Received stanza to handle: " + ET.tostring(tree))
+            if tree.get("to") is None or tree.get("to") in self.local_domains:
+                log.debug("Received stanza to handle: " + ET.tostring(tree))
 
-                    try:
-                        if tree.tag not in self.stanza_handlers:
-                            raise FeatureNotImplementedError(tree)
+                try:
+                    if tree.tag not in self.stanza_handlers:
+                        raise FeatureNotImplementedError(tree)
 
-                        response = self.stanza_handlers[tree.tag].handle(tree)
-                        if response is not None:
-                            self.pub_socket.send(cPickle.dumps(response))
-                    except StanzaError, e:
-                        # send caught errors back to sender
-                        self.pub_socket.send_multipart(e.element)
+                    response = self.stanza_handlers[tree.tag].handle(tree)
+                    if response is not None:
+                        self.pub_socket.send(cPickle.dumps(response))
+                except StanzaError, e:
+                    # send caught errors back to sender
+                    self.pub_socket.send_multipart(e.element)

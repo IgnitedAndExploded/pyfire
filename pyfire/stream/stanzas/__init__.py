@@ -93,12 +93,7 @@ class TagHandler(object):
             self.connection.stop_connection()
 
     def publish_stanza(self, tree):
-        to = tree.get("to")
-        if to is None:
-            to = self.jid.domain
-        tree.set("to", to)
-        to = to.encode("utf-8")
-        log.debug("Publishing Stanza for topic %s: %s" % (to, ET.tostring(tree)))
+        log.debug("Publishing Stanza %s" % (ET.tostring(tree)))
         self.publisher.send(cPickle.dumps(tree))
 
     def masked_send_list(self, msgs):
