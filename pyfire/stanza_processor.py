@@ -72,7 +72,7 @@ class StanzaProcessor(object):
 
         try:
             if tree.tag not in self.stanza_handlers:
-                raise FeatureNotImplementedError
+                raise FeatureNotImplementedError(tree)
 
             response = self.stanza_handlers[tree.tag].handle(tree)
             if response is not None:
