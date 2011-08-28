@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 from pyfire.auth.sasl import SASLAuthHandler, MalformedRequestError, NotAuthorizedError
 from pyfire.auth.backends import InvalidAuthenticationError
 from pyfire.tests import PyfireTestCase
+import pyfire.singletons
 
 class MockValidatorRegistry(object):
 
@@ -45,6 +46,7 @@ class TestSASLAuthHandler(PyfireTestCase):
         handler.process(auth_element)
 
     def test_plain_auth_bad(self):
+        pyfire.singletons._validation_registry.success = False
         handler = SASLAuthHandler()
         auth_element = ET.Element("auth")
         auth_element.set("mechanism", "PLAIN")
