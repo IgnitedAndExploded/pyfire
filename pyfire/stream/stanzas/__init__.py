@@ -26,6 +26,7 @@ log = Logger(__name__)
 _publisher = None
 _publisher_lock = allocate_lock()
 
+
 def get_publisher():
     """Returns the application publish socket"""
     global _publisher
@@ -47,7 +48,8 @@ class StanzaPublisher(object):
         router = self.zmq_context.socket(zmq.REQ)
         router.connect(config.get('ipc', 'forwarder_command_channel'))
 
-        # TODO: add auth for authenticating us at the forwarder when it supports it
+        # TODO: add auth for authenticating us at the forwarder when it
+        #       supports it
         router.send(' ')
         self.pub_url, self.sub_url = router.recv_json()
         router.close()
@@ -101,7 +103,9 @@ class TagHandler(object):
                 processed_stanzas.connect(self.publisher.sub_url)
                 processed_stanzas.setsockopt(zmq.SUBSCRIBE, str(self.jid))
 
-                self.processed_stream = ZMQStream(processed_stanzas, self.connection.stream.io_loop)
+                self.processed_stream = ZMQStream(
+                            processed_stanzas,
+                            self.connection.stream.io_loop)
                 self.processed_stream.on_recv(self.send_string)
 
             elif tree.tag in ["iq", "message", "presence"]:
@@ -110,7 +114,7 @@ class TagHandler(object):
                 stanza = ET.tostring(tree)
                 if tree.get("to") is None:
                     tree.set("to", str(self.jid.domain))
-                log.debug("Publishing Stanza for topic %s: %s" % (tree.get("to"),stanza))
+                log.debug("Publishing Stanza for topic %s: %s" % (tree.get("to"), stanza))
                 self.publisher.send(tree.get("to"), stanza)
 
         except StreamError, e:

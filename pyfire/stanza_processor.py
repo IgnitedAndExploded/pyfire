@@ -9,7 +9,7 @@
     :copyright: 2011 by the pyfire Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
- 
+
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 import xml.etree.ElementTree as ET
@@ -21,10 +21,11 @@ from pyfire.stream.stanzas.errors import StanzaError, FeatureNotImplementedError
 
 log = Logger(__name__)
 
+
 class StanzaProcessor(object):
     """Holds a stanza handler for local domains"""
 
-    def __init__(self, local_domains = ("localhost")):
+    def __init__(self, local_domains=("localhost")):
         self.local_domains = local_domains
         self.current_topic = None
         self.loop = ioloop.IOLoop.instance()
@@ -67,7 +68,7 @@ class StanzaProcessor(object):
 
         # TODO: check if we really want to handle the topis set..
         tree = ET.fromstring(msg[0])
-        log.debug("Received stanza to handle: "+ET.tostring(tree))
+        log.debug("Received stanza to handle: " + ET.tostring(tree))
 
         try:
             if tree.tag not in self.stanza_handlers:
@@ -75,7 +76,7 @@ class StanzaProcessor(object):
 
             response = self.stanza_handlers[tree.tag].handle(tree)
             if response is not None:
-                self.pub_socket.send_multipart((tree.get("from"), ET.tostring(response) ))
+                self.pub_socket.send_multipart((tree.get("from"), ET.tostring(response)))
         except StanzaError, e:
             # send cought errors back to sender
-            self.pub_socket.send_multipart((tree.get("from"),unicode(e)))
+            self.pub_socket.send_multipart((tree.get("from"), unicode(e)))

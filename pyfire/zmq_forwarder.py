@@ -33,8 +33,8 @@ class ZMQForwarder(object):
         self.command_channel = zmqstream.ZMQStream(comm_sock, self.loop)
         self.command_channel.on_recv(self.register_peer)
 
-        self.output_url = 'tcp://127.0.0.1:%i' % ( random.randint(15000,15500) )
-        log.debug("Using publishing url "+self.output_url)
+        self.output_url = 'tcp://127.0.0.1:%i' % (random.randint(15000, 15500))
+        log.debug("Using publishing url " + self.output_url)
         self.output = self.ctx.socket(zmq.PUB)
         self.output.bind(self.output_url)
 
@@ -51,8 +51,8 @@ class ZMQForwarder(object):
     def register_peer(self, msg):
         """Callback for command channel that registeres a new peer"""
 
-        subscriber = 'tcp://127.0.0.1:%i' % ( random.randint(5600,5700) )
-        log.info('registering new subscriber at '+subscriber)
+        subscriber = 'tcp://127.0.0.1:%i' % (random.randint(5600, 5700))
+        log.info('registering new subscriber at ' + subscriber)
         new_sub = self.ctx.socket(zmq.SUB)
         new_sub.connect(subscriber)
         new_sub.setsockopt(zmq.SUBSCRIBE, '')
