@@ -30,6 +30,8 @@ class Iq(object):
         iq = ET.Element("iq")
         iq.set("id", tree.get("id"))
         iq.set("type", "result")
+        iq.set("from", tree.get("to"))
+        iq.set("to", tree.get("from"))
         # dispatch to the handler for the given request query
         for req in list(tree):
             if req.tag in self.handler:
