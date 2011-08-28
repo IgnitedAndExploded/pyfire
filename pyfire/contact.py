@@ -8,6 +8,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+from pyfire.jid import JID
 import xml.etree.ElementTree as ET
 
 
@@ -20,7 +21,7 @@ class Contact(object):
         super(Contact, self).__init__()
 
         # required
-        self.jid = jid
+        self.jid = JID(jid)
 
         # optional
         self.approved = None
