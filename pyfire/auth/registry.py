@@ -9,7 +9,9 @@
     :license: BSD, see LICENSE for more details.
 """
 
+from thread import allocate_lock
 
+from pyfire.auth.backends import InvalidAuthenticationError
 
 
 class ValidationRegistry(object):
@@ -17,22 +19,30 @@ class ValidationRegistry(object):
 
     def __init__(self):
         self.handlers = {}
+        self._lock = allocate_lock()
 
     def register(self, backend, handler):
         """Registers given backend handler"""
 
-        if backend not in self.handlers:
-            self.handlers[backend] = handler
-        else:
+        success = False
+        with self._lock:
+            if backend not in self.handlers:
+                self.handlers[backend] = handler
+                success = True
+        if not success:
             raise AttributeError("backend already known")
 
     def unregister(self, backend):
         """Unregisters handler for backend"""
 
-        if backend not in self.handlers:
+        success = False
+        with self._lock:
+            if backend in self.handlers:
+                self.handlers[backend].shutdown()
+                del self.handlers[backend]
+                success = True
+        if not success:
             raise AttributeError("backend unknown")
-        self.handlers[backend].shutdown()
-        del self.handlers[backend]
 
     def validate_userpass(self, username, password):
         """Checks username and password against all backends. Returns
@@ -40,10 +50,15 @@ class ValidationRegistry(object):
            InvalidAuthenticationError otherwise.
         """
 
-        for backend, handler in self.handlers.iteritems():
-            if handler.validate_userpass(username, password):
-                return backend
-        raise InvalidAuthenticationError("username/password invalid")
+        result = ""
+        with self._lock:
+            for backend, handler in self.handlers.iteritems():
+                if handler.validate_userpass(username, password):
+                    result = backend
+                    break
+        if result == "":
+            raise InvalidAuthenticationError("username/password invalid")
+        return result
 
     def validate_token(self, token):
         """Validates given token against all backends. Returns
@@ -51,7 +66,12 @@ class ValidationRegistry(object):
            InvalidAuthenticationError otherwise.
         """
 
-        for backend, handler in self.handlers.iteritems():
-            if handler.validate_token(token):
-                return backend
-        raise InvalidAuthenticationError("token invalid")
+        result = ""
+        with self._lock:
+            for backend, handler in self.handlers.iteritems():
+                if handler.validate_token(token):
+                    result = backend
+                    break
+        if result == "":
+            raise InvalidAuthenticationError("token invalid")
+        return result
