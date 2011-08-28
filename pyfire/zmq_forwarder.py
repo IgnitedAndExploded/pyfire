@@ -26,8 +26,10 @@ class ZMQForwarder(object):
     def __init__(self, event_loop = None):
 
         # use provided event_loop if provided
+        self.own_loop = False
         if event_loop is None:
             self.loop = ioloop.IOLoop.instance()
+            self.own_loop = True
         else:
             self.loop = event_loop
 
@@ -46,7 +48,8 @@ class ZMQForwarder(object):
     def start(self):
         """Starts the IOloop"""
 
-        self.loop.start()
+        if self.own_loop:
+            self.loop.start()
 
     def handle_stanza(self, msg):
         """Callback handler used for forwarding received stanzas"""
