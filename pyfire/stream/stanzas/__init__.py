@@ -56,7 +56,7 @@ class StanzaPublisher(object):
         self.pub_socket.bind(self.pub_url)
 
     def send(self, topic, msg):
-        self.pub_socket.send_multipart([topic, msg])
+        self.pub_socket.send_multipart((topic, msg))
 
 
 class TagHandler(object):

@@ -16,6 +16,8 @@ import xml.etree.ElementTree as ET
 
 from pyfire.logger import Logger
 from pyfire import configuration as config
+from pyfire.stream.stanzas import iq, message, presence
+from pyfire.stream.stanzas.errors import StanzaError, FeatureNotImplementedError
 
 log = Logger(__name__)
 
@@ -24,6 +26,7 @@ class StanzaProcessor(object):
 
     def __init__(self, local_domains = ("localhost")):
         self.local_domains = local_domains
+        self.current_topic = None
         self.loop = ioloop.IOLoop.instance()
         self.ctx = zmq.Context()
 
@@ -45,11 +48,34 @@ class StanzaProcessor(object):
         substream = zmqstream.ZMQStream(sub_socket, self.loop)
         substream.on_recv(self.handle_stanza)
 
+        # init the handlers
+        self.stanza_handlers = {
+                'iq': iq.Iq(),
+                'message': message.Message(),
+                'presence': presence.Presence()
+            }
+
     def start(self):
         """Starts the handling of the bundles IOLoop"""
         self.loop.start()
 
-    def handle_stanza(self, msg_list):
+    def handle_stanza(self, msg):
         """This actually handles the incomming stamzas"""
-        for msg in msg_list:
-            log.debug("Received stanza: "+msg)
+        if self.current_topic is None:
+            self.current_topic = msg[0]
+            return
+
+        # TODO: check if we really want to handle the topis set..
+        tree = ET.fromstring(msg[0])
+        log.debug("Received stanza to handle: "+ET.tostring(tree))
+
+        try:
+            if tree.tag not in self.stanza_handlers:
+                raise FeatureNotImplementedError
+
+            response = self.stanza_handlers[tree.tag].handle(tree)
+            if response is not None:
+                self.pub_socket.send_multipart((tree.get("from"), ET.tostring(response) ))
+        except StanzaError, e:
+            # send cought errors back to sender
+            self.pub_socket.send_multipart((tree.get("from"),unicode(e)))
