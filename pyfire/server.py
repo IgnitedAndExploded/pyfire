@@ -26,7 +26,6 @@ class XMPPServer(object):
     """A non-blocking, single-threaded XMPP server."""
 
     def __init__(self, io_loop=None):
-
         self.io_loop = io_loop
         self._sockets = {}  # fd -> socket object
         self._started = False
@@ -41,8 +40,8 @@ class XMPPServer(object):
 
             server.bind(port, address)
             server.start()
-
         """
+
         self.bind(port, address)
         self.start()
 
@@ -62,6 +61,7 @@ class XMPPServer(object):
         This method may be called multiple times prior to start() to listen
         on multiple ports or interfaces.
         """
+
         if address == "":
             address = None
         for res in socket.getaddrinfo(address, port, family,
