@@ -34,6 +34,7 @@ class ZMQForwarder(object):
         self.command_channel.on_recv(self.register_peer)
 
         self.output_url = 'tcp://127.0.0.1:%i' % ( random.randint(15000,15500) )
+        log.debug("Using publishing url "+self.output_url)
         self.output = self.ctx.socket(zmq.PUB)
         self.output.bind(self.output_url)
 
