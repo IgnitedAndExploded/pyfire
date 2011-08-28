@@ -5,6 +5,7 @@ import os
 import socket
 import sys
 import traceback
+import threading
 import xml.etree.ElementTree as ET
 
 from zmq.eventloop import ioloop
