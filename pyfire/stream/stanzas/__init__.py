@@ -76,7 +76,7 @@ class TagHandler(object):
                             self.send_element(response_element)
                             log.debug("Sent empty session element")
                             self.processed_stream.stop_on_recv()
-                            self.processed_stream.on_recv(self.send_string)
+                            self.processed_stream.on_recv(self.send_list)
                         else:
                             self.publish_stanza(tree)
                     else:
@@ -98,13 +98,18 @@ class TagHandler(object):
         log.debug("Publishing Stanza for topic %s: %s" % (tree.get("from"),stanza))
         self.publisher.send(tree.get("from"), stanza)
 
-    def masked_send_string(self, msg):
+    def masked_send_list(self, msgs):
         """Unmark waiting for a session element if we received another stanza response"""
 
         self.session_active = True
         self.processed_stream.stop_on_recv()
         self.processed_stream.on_recv(self.send_string)
-        self.send_string(msg)
+        self.send_list(msgs)
+
+    def send_list(self, msgs):
+
+        for msg in msgs:
+            self.send_string(msg)
 
     def set_resource(self, tree):
         """Set a resource on our JID"""
@@ -165,7 +170,7 @@ class TagHandler(object):
 
         self.processed_stream = ZMQStream(processed_stanzas_socket,
                                           self.connection.stream.io_loop)
-        self.processed_stream.on_recv(self.masked_send_string)
+        self.processed_stream.on_recv(self.masked_send_list)
 
     def add_auth_options(self, feature_element):
         """Add supported auth mechanisms to feature element"""
