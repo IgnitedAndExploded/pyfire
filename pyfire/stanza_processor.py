@@ -60,25 +60,33 @@ class StanzaProcessor(object):
         """Starts the handling of the bundles IOLoop"""
         self.loop.start()
 
-    def handle_stanza(self, msg):
+    def handle_stanza(self, msgs):
         """This actually handles the incomming stamzas"""
-        log.debug(str(msg))
-        topic, stanza = msg[:2]
+        for msg in msgs:
+            log.debug(str(msg))
+            if self.current_topic is None:
+                self.current_topic = msg
+            else:
 
-        # TODO: check if we really want to handle the topis set..
-        tree = cPickle.loads(msg[0].split('\n'))
-        log.debug("Received stanza to handle: " + ET.tostring(tree))
+                # TODO: check if we really want to handle the topis set..
+                trash = "\n".join(stanza.split('\n'))
+                log.info(trash)
+                #tree = cPickle.loads(trash)
+                #log.debug("Received stanza to handle: " + ET.tostring(tree))
+                return
 
-        try:
-            if tree.tag not in self.stanza_handlers:
-                raise FeatureNotImplementedError(tree)
+                try:
+                    if tree.tag not in self.stanza_handlers:
+                        raise FeatureNotImplementedError(tree)
 
-            response = self.stanza_handlers[tree.tag].handle(tree)
-            if response is not None:
-                self.pub_socket.send_multipart((str(tree.get("from")), cPickle.dumps(response)))
-        except StanzaError, e:
-            # send cought errors back to sender
-            self.pub_socket.send_multipart((tree.get("from"), unicode(e)))
+                    response = self.stanza_handlers[tree.tag].handle(tree)
+                    if response is not None:
+                        self.pub_socket.send_multipart((str(tree.get("from")), cPickle.dumps(response)))
+                except StanzaError, e:
+                    # send cought errors back to sender
 
-        # reset topic when we handled it..
-        self.current_topic = None
+                    #self.pub_socket.send_multipart((strtree.get("from"), unicode(e)))
+                    pass
+
+                # reset topic when we handled it..
+                self.current_topic = None
