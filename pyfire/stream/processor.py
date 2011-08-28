@@ -18,8 +18,10 @@ import xml.etree.ElementTree as ET
 from xml.sax import make_parser as sax_make_parser, SAXParseException
 from xml.sax.handler import ContentHandler
 
+from pyfire.logger import Logger
 from pyfire.stream.errors import BadFormatError, InvalidXMLError
 
+log = Logger(__name__)
 
 class XMPPContentHandler(ContentHandler):
     """Process content from parser, tracking parsing depths

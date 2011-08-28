@@ -119,7 +119,6 @@ class XMPPServer(object):
                     return
                 raise
             try:
-                #import pdb;pdb.set_trace()
                 stream = iostream.IOStream(connection, io_loop=self.io_loop)
                 log.info("Starting new connection for client connection from %s:%s" % address)
                 self._connections[address] = XMPPConnection(stream, address)
