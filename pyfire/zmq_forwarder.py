@@ -23,9 +23,15 @@ log = Logger(__name__)
 class ZMQForwarder(object):
     """ZMQ Forwarder class"""
 
-    def __init__(self):
+    def __init__(self, event_loop = None):
+
+        # use provided event_loop if provided
+        if event_loop is None:
+            self.loop = ioloop.IOLoop.instance()
+        else:
+            self.loop = event_loop
+
         self.ctx = zmq.Context()
-        self.loop = ioloop.IOLoop.instance()
 
         # Init command channel
         comm_sock = self.ctx.socket(zmq.REP)

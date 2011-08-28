@@ -26,20 +26,24 @@ from tornado import iostream
 from tornado.stack_context import StackContext
 
 from pyfire import configuration as config
+from pyfire import zmq_forwarder
 from pyfire.server import XMPPServer, XMPPConnection
 
 
-def start_client_listener():
-    io_loop = ioloop.IOLoop.instance()
+def start_client_listener(io_loop):
     server = XMPPServer(io_loop)
     server.bind(config.get('listeners', 'clientport'),
                 config.get('listeners', 'ip'))
     server.start()
+
+if __name__ == '__main__':
+    io_loop = ioloop.IOLoop.instance()
+    # create a forwader/router for internal communication
+    fwd = zmq_forwarder.ZMQForwarder(io_loop)
+
+    start_client_listener(io_loop)
     try:
         io_loop.start()
     except (KeyboardInterrupt, SystemExit):
         io_loop.stop()
         print "exited cleanly"
-
-if __name__ == '__main__':
-    start_client_listener()
