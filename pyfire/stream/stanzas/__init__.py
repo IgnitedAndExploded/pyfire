@@ -93,6 +93,8 @@ class TagHandler(object):
 
     def publish_stanza(self, tree):
         stanza = ET.tostring(tree)
+        if tree.get("to") is None:
+            tree.set("to", str(self.jid.domain))
         log.debug("Publishing Stanza for topic %s: %s" % (tree.get("from"),stanza))
         self.publisher.send(tree.get("from"), stanza)
 

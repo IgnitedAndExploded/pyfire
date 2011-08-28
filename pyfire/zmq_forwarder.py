@@ -23,16 +23,8 @@ log = Logger(__name__)
 class ZMQForwarder(object):
     """ZMQ Forwarder class"""
 
-    def __init__(self, event_loop = None):
-
-        # use provided event_loop if provided
-        self.own_loop = False
-        if event_loop is None:
-            self.loop = ioloop.IOLoop.instance()
-            self.own_loop = True
-        else:
-            self.loop = event_loop
-
+    def __init__(self):
+        self.loop = ioloop.IOLoop.instance()
         self.ctx = zmq.Context()
 
         # Init command channel
@@ -41,15 +33,14 @@ class ZMQForwarder(object):
         self.command_channel = zmqstream.ZMQStream(comm_sock, self.loop)
         self.command_channel.on_recv(self.register_peer)
 
-        self.output_url = 'tcp://127.0.0.1:%i' % ( random.randint(15000,15500) )
+        self.output_url = 'tcp://127.0.0.1:%i' % (random.randint(15000, 15500))
+        log.debug("Using publishing url " + self.output_url)
         self.output = self.ctx.socket(zmq.PUB)
         self.output.bind(self.output_url)
 
     def start(self):
         """Starts the IOloop"""
-
-        if self.own_loop:
-            self.loop.start()
+        self.loop.start()
 
     def handle_stanza(self, msg):
         """Callback handler used for forwarding received stanzas"""
@@ -60,8 +51,8 @@ class ZMQForwarder(object):
     def register_peer(self, msg):
         """Callback for command channel that registeres a new peer"""
 
-        subscriber = 'tcp://127.0.0.1:%i' % ( random.randint(5600,5700) )
-        log.info('registering new subscriber at '+subscriber)
+        subscriber = 'tcp://127.0.0.1:%i' % (random.randint(5600, 5700))
+        log.info('registering new subscriber at ' + subscriber)
         new_sub = self.ctx.socket(zmq.SUB)
         new_sub.connect(subscriber)
         new_sub.setsockopt(zmq.SUBSCRIBE, '')
