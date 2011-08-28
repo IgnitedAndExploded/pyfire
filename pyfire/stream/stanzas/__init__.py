@@ -172,6 +172,15 @@ class TagHandler(object):
                                           self.connection.stream.io_loop)
         self.processed_stream.on_recv(self.masked_send_list)
 
+        # Generate a ping stanza to init pubsub streams
+        iq = ET.Element("iq")
+        iq.set("from", str(self.jid))
+        iq.set("id", "--init--")
+        iq.set("type", "get")
+        ping = ET.SubElement(iq, "ping")
+        ping.set("xmlns", "urn:xmpp:ping")
+        self.publish_stanza(iq)
+
     def add_auth_options(self, feature_element):
         """Add supported auth mechanisms to feature element"""
 
