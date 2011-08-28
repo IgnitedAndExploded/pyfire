@@ -75,9 +75,9 @@ class StanzaPublisher(object):
         self.pub_socket = self.zmq_context.socket(zmq.PUB)
         self.pub_socket.bind(self.pub_url)
 
-    def send(self, topic, msg):
+    def send(self, msg):
         with _publisher_lock:
-            self.pub_socket.send_multipart([topic, msg.encode("utf-8")])
+            self.pub_socket.send(msg)
 
 _validation_registry = None
 _validation_registry_lock = allocate_lock()
