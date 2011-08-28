@@ -22,9 +22,7 @@ import contextlib
 import socket
 import thread
 
-from tornado import ioloop
-from tornado import iostream
-from tornado.stack_context import StackContext
+from zmq.eventloop import ioloop
 
 from pyfire import configuration as config
 from pyfire import zmq_forwarder, stanza_processor

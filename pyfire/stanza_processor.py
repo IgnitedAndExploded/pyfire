@@ -28,7 +28,7 @@ class StanzaProcessor(object):
 
     def __init__(self, local_domains=("localhost")):
         self.local_domains = local_domains
-        self.loop = ioloop.IOLoop.instance()
+        self.loop = ioloop.IOLoop()
         self.ctx = zmq.Context()
 
         log.debug('Registering StanzaProcessor at forwarder..')

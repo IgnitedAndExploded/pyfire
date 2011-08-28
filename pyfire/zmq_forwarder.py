@@ -24,7 +24,7 @@ class ZMQForwarder(object):
     """ZMQ Forwarder class"""
 
     def __init__(self):
-        self.loop = ioloop.IOLoop.instance()
+        self.loop = ioloop.IOLoop()
         self.ctx = zmq.Context()
 
         # Init command channel

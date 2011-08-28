@@ -10,7 +10,6 @@ import xml.etree.ElementTree as ET
 
 from zmq.eventloop import ioloop
 from tornado import iostream
-from tornado import stack_context
 
 from pyfire import configuration as config
 from pyfire.errors import XMPPProtocolError
