@@ -81,3 +81,6 @@ class StanzaProcessor(object):
         except StanzaError, e:
             # send cought errors back to sender
             self.pub_socket.send_multipart((tree.get("from"), unicode(e)))
+
+        # reset topic when we handled it..
+        self.current_topic = None
