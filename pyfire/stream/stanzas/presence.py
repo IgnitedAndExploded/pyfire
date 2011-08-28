@@ -24,4 +24,5 @@ class Presence(object):
         """handler for resence requests,
            returns a response that should be sent back"""
         response = Element("presence")
+        response.set('to', tree.get('from'))
         return response
