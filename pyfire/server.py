@@ -12,8 +12,6 @@ from tornado import iostream
 from tornado import stack_context
 
 from pyfire import configuration as config
-from pyfire.auth.backends import DummyTrueValidator
-from pyfire.auth.registry import AuthHandlerRegistry, ValidationRegistry
 from pyfire.errors import XMPPProtocolError
 from pyfire.logger import Logger
 from pyfire.stream import processor
@@ -161,11 +159,6 @@ class XMPPConnection(object):
                             self.taghandler.streamhandler,
                             self.taghandler.contenthandler)
 
-        # TODO: Find a better place for this
-        validation_registry = ValidationRegistry()
-
-        validator = DummyTrueValidator()
-        validation_registry.register('dummy', validator)
         self.stream.read_bytes(1, self._read_char)
 
     def _read_char(self, data):

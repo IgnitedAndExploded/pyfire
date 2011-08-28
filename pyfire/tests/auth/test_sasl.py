@@ -32,10 +32,12 @@ class MockValidatorRegistry(object):
         else:
             raise InvalidAuthenticationError
 
+pyfire.singletons._validation_registry = MockValidatorRegistry()
 
 class TestSASLAuthHandler(PyfireTestCase):
 
     def test_plain_auth_good(self):
+        pyfire.singletons._validation_registry.success = True
         handler = SASLAuthHandler()
         auth_element = ET.Element("auth")
         auth_element.set("mechanism", "PLAIN")

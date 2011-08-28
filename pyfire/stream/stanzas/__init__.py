@@ -19,44 +19,11 @@ from zmq.eventloop.zmqstream import ZMQStream
 import pyfire.configuration as config
 from pyfire.jid import JID
 from pyfire.logger import Logger
+from pyfire.singletons import get_publisher, get_known_jids
 from pyfire.stream.errors import *
 
 log = Logger(__name__)
 
-_publisher = None
-_publisher_lock = allocate_lock()
-
-def get_publisher():
-    """Returns the application publish socket"""
-    global _publisher
-    _publisher_lock.acquire()
-    if _publisher == None:
-        _publisher = StanzaPublisher()
-    _publisher_lock.release()
-    return _publisher
-
-
-class StanzaPublisher(object):
-    """Handles the publish socket"""
-
-    def __init__(self):
-        self.zmq_context = zmq.Context()
-
-        # connect to forwarder/router
-        log.debug('Registering StanzaPublisher at forwarder..')
-        router = self.zmq_context.socket(zmq.REQ)
-        router.connect(config.get('ipc', 'forwarder_command_channel'))
-
-        # TODO: add auth for authenticating us at the forwarder when it supports it
-        router.send(' ')
-        self.pub_url, self.sub_url = router.recv_json()
-        router.close()
-
-        self.pub_socket = self.zmq_context.socket(zmq.PUB)
-        self.pub_socket.bind(self.pub_url)
-
-    def send(self, topic, msg):
-        self.pub_socket.send_multipart([topic, msg])
 
 
 class TagHandler(object):
@@ -117,16 +84,13 @@ class TagHandler(object):
 
     def add_auth_options(self, feature_element):
         """Add supported auth mechanisms to feature element"""
-        registry = self.connection.auth_registry
 
-        for mechtype in registry.supported_namespaces:
-            mechtype_element = ET.SubElement(feature_element, "mechanisms")
-            mechtype_element.set("xmlns", mechtype)
-            handler = registry.request_handler(mechtype)
-            for mech in handler.supported_mechs:
-                mech_element = ET.SubElement(mechtype_element, 'mechanism')
-                mech_element.text = mech
-            mechanisms = ET.Element("mechanisms")
+        handler = SASLAuthHandler()
+        mechtype_element = ET.SubElement(feature_element, "mechanisms")
+        mechtype_element.set("xmlns", handler.namespace)
+        for mech in handler.supported_mechs:
+            mech_element = ET.SubElement(mechtype_element, 'mechanism')
+            mech_element.text = mech
 
     def add_server_features(self, feature_element):
         bind = ET.SubElement(feature_element, "bind")

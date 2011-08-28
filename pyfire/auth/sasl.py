@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 
 from pyfire.auth import AuthenticationHandler, AuthenticationError
 from pyfire.auth.backends import InvalidAuthenticationError
+from pyfire.singletons import get_validation_registry
 
 
 class SASLError(AuthenticationError):
@@ -152,7 +153,9 @@ class SASLAuthHandler(AuthenticationHandler):
 
             authzid, authcid, password = splits
             try:
-                self.check_registry.validate_userpass(authcid, password)
+                registry = get_validation_registry()
+                backend = registry.validate_userpass(authcid, password)
+                log.info("Authenticated cid %s via backend %s" % (authcid, backend))
                 self.authenticated_user = authcid
             except InvalidAuthenticationError:
                 raise NotAuthorizedError

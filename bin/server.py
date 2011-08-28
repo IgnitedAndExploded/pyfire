@@ -28,8 +28,9 @@ from tornado.stack_context import StackContext
 
 from pyfire import configuration as config
 from pyfire import zmq_forwarder
+from pyfire.auth.backends import DummyTrueValidator
 from pyfire.server import XMPPServer, XMPPConnection
-
+from pyfire.singletons import get_validation_registry
 
 def start_client_listener(io_loop):
     server = XMPPServer(io_loop)
@@ -38,6 +39,10 @@ def start_client_listener(io_loop):
     server.start()
 
 if __name__ == '__main__':
+    validation_registry = get_validation_registry()
+    validator = DummyTrueValidator()
+    validation_registry.register('dummy', validator)
+
     io_loop = ioloop.IOLoop.instance()
     # create a forwader/router for internal communication
     fwd = zmq_forwarder.ZMQForwarder()

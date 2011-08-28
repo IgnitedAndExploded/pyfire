@@ -14,10 +14,17 @@ import warnings
 
 from pyfire.auth.registry import ValidationRegistry
 from pyfire.auth.backends import DummyTrueValidator
+import pyfire.stream.stanzas
 from pyfire.stream.stanzas import TagHandler
 from pyfire.stream import errors
 from pyfire.tests import PyfireTestCase
 
+class FakePublisher(object):
+
+    def __call__(self):
+        return
+
+pyfire.stream.stanzas.get_publisher = FakePublisher()
 
 class MockConnection(object):
     def __init__(self):
