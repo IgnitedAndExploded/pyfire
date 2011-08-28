@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import cPickle
 import uuid
 from thread import allocate_lock
 import xml.etree.ElementTree as ET
@@ -92,18 +93,17 @@ class TagHandler(object):
             self.connection.stop_connection()
 
     def publish_stanza(self, tree):
-        stanza = ET.tostring(tree)
         if tree.get("to") is None:
             tree.set("to", str(self.jid.domain))
-        log.debug("Publishing Stanza for topic %s: %s" % (tree.get("from"),stanza))
-        self.publisher.send(tree.get("from"), stanza)
+        log.debug("Publishing Stanza for topic %s: %s" % (tree.get("from"), ET.tostring(tree)))
+        self.publisher.send(tree.get("from"), cPickle.dumps(tree))
 
     def masked_send_list(self, msgs):
         """Unmark waiting for a session element if we received another stanza response"""
 
         self.session_active = True
         self.processed_stream.stop_on_recv()
-        self.processed_stream.on_recv(self.send_string)
+        self.processed_stream.on_recv(self.send_list)
         self.send_list(msgs)
 
     def send_list(self, msgs):

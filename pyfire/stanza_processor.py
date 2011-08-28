@@ -10,6 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import cPickle
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 import xml.etree.ElementTree as ET
@@ -67,7 +68,7 @@ class StanzaProcessor(object):
             return
 
         # TODO: check if we really want to handle the topis set..
-        tree = ET.fromstring(msg[0])
+        tree = cPickle.loads(msg[0])
         log.debug("Received stanza to handle: " + ET.tostring(tree))
 
         try:
@@ -76,7 +77,7 @@ class StanzaProcessor(object):
 
             response = self.stanza_handlers[tree.tag].handle(tree)
             if response is not None:
-                self.pub_socket.send_multipart((tree.get("from"), ET.tostring(response)))
+                self.pub_socket.send_multipart((tree.get("from"), cPickle.dumps(response)))
         except StanzaError, e:
             # send cought errors back to sender
             self.pub_socket.send_multipart((tree.get("from"), unicode(e)))
