@@ -39,7 +39,7 @@ class StanzaError(XMPPProtocolError):
 
 class BadRequestError(StanzaError):
     """The sender has sent a stanza containing XML that does not conform to
-       the appropriate schema or that cannot be processed
+       the appropriate schema or that it cannot be processed
     """
 
     def __init__(self, request):
