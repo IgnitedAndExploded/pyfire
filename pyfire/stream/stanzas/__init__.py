@@ -77,7 +77,7 @@ class TagHandler(object):
                             self.send_element(response_element)
                             log.debug("Sent empty session element")
                             self.processed_stream.stop_on_recv()
-                            self.processed_stream.on_recv(self.send_list)
+                            self.processed_stream.on_recv(self.send_list, False)
                         else:
                             self.publish_stanza(tree)
                     else:
@@ -99,20 +99,22 @@ class TagHandler(object):
         tree.set("to", to)
         to = to.encode("utf-8")
         log.debug("Publishing Stanza for topic %s: %s" % (to, ET.tostring(tree)))
-        self.publisher.send(to, cPickle.dumps(tree))
+        self.publisher.send(cPickle.dumps(tree))
 
     def masked_send_list(self, msgs):
         """Unmark waiting for a session element if we received another stanza response"""
 
         self.session_active = True
         self.processed_stream.stop_on_recv()
-        self.processed_stream.on_recv(self.send_list)
+        self.processed_stream.on_recv(self.send_list, False)
         self.send_list(msgs)
 
     def send_list(self, msgs):
-
         for msg in msgs:
-            self.send_string(msg.decode("utf-8"))
+            tmp = cPickle.loads(msg.bytes)
+            if tmp.get("to") == str(self.jid) or tmp.get("to") == self.jid.bare:
+                tmp2 = ET.tostring(tmp)
+                self.send_string(tmp2)
 
     def set_resource(self, tree):
         """Set a resource on our JID"""
@@ -169,11 +171,11 @@ class TagHandler(object):
         # Subscribe to stanza responses
         processed_stanzas_socket = zmq.Context().socket(zmq.SUB)
         processed_stanzas_socket.connect(self.publisher.sub_url)
-        processed_stanzas_socket.setsockopt(zmq.SUBSCRIBE, str(self.jid))
+        processed_stanzas_socket.setsockopt(zmq.SUBSCRIBE, '')
 
         self.processed_stream = ZMQStream(processed_stanzas_socket,
                                           self.connection.stream.io_loop)
-        self.processed_stream.on_recv(self.masked_send_list)
+        self.processed_stream.on_recv(self.masked_send_list, False)
 
         # Generate a ping stanza to init pubsub streams
         iq = ET.Element("iq")

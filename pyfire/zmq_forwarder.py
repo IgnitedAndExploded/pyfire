@@ -31,7 +31,7 @@ class ZMQForwarder(object):
         comm_sock = self.ctx.socket(zmq.REP)
         comm_sock.bind(config.get('ipc', 'forwarder_command_channel'))
         self.command_channel = zmqstream.ZMQStream(comm_sock, self.loop)
-        self.command_channel.on_recv(self.register_peer)
+        self.command_channel.on_recv(self.register_peer, False)
 
         self.output_url = 'tcp://127.0.0.1:%i' % (random.randint(15000, 15500))
         log.debug("Using publishing url " + self.output_url)
@@ -56,5 +56,5 @@ class ZMQForwarder(object):
         new_sub.connect(subscriber)
         new_sub.setsockopt(zmq.SUBSCRIBE, '')
         substream = zmqstream.ZMQStream(new_sub, self.loop)
-        substream.on_recv(self.handle_stanza)
+        substream.on_recv(self.handle_stanza, False)
         self.command_channel.send_json((subscriber, self.output_url))

@@ -47,7 +47,7 @@ class StanzaProcessor(object):
         for domain in self.local_domains:
             sub_socket.setsockopt(zmq.SUBSCRIBE, domain)
         substream = zmqstream.ZMQStream(sub_socket, self.loop)
-        substream.on_recv(self.handle_stanza)
+        substream.on_recv(self.handle_stanza, False)
 
         # init the handlers
         self.stanza_handlers = {
@@ -63,30 +63,21 @@ class StanzaProcessor(object):
     def handle_stanza(self, msgs):
         """This actually handles the incomming stamzas"""
         for msg in msgs:
-            log.debug(str(msg))
-            if self.current_topic is None:
-                self.current_topic = msg
+            tree = cPickle.loads(msg.bytes)
+            if tree.get("to") is None:
+                log.warning("to attribute is None at %s" % ET.tostring(tree))
             else:
+                log.debug("found to attribute: %s " % tree.get("to"))
+                if tree.get("to") in self.local_domains:
+                    log.debug("Received stanza to handle: " + ET.tostring(tree))
 
-                # TODO: check if we really want to handle the topis set..
-                trash = "\n".join(stanza.split('\n'))
-                log.info(trash)
-                #tree = cPickle.loads(trash)
-                #log.debug("Received stanza to handle: " + ET.tostring(tree))
-                return
+                    try:
+                        if tree.tag not in self.stanza_handlers:
+                            raise FeatureNotImplementedError(tree)
 
-                try:
-                    if tree.tag not in self.stanza_handlers:
-                        raise FeatureNotImplementedError(tree)
-
-                    response = self.stanza_handlers[tree.tag].handle(tree)
-                    if response is not None:
-                        self.pub_socket.send_multipart((str(tree.get("from")), cPickle.dumps(response)))
-                except StanzaError, e:
-                    # send cought errors back to sender
-
-                    #self.pub_socket.send_multipart((strtree.get("from"), unicode(e)))
-                    pass
-
-                # reset topic when we handled it..
-                self.current_topic = None
+                        response = self.stanza_handlers[tree.tag].handle(tree)
+                        if response is not None:
+                            self.pub_socket.send(cPickle.dumps(response))
+                    except StanzaError, e:
+                        # send caught errors back to sender
+                        self.pub_socket.send_multipart(e.element)
