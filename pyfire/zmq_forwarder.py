@@ -45,10 +45,7 @@ class ZMQForwarder(object):
     def handle_stanza(self, msg):
         """Callback handler used for forwarding received stanzas"""
 
-        for line in msg:
-            line = line.decode("utf-8")
-            # do something with it later on
-            self.output.send(line.encode("utf-8"))
+        self.output.send_multipart(msg)
 
     def register_peer(self, msg):
         """Callback for command channel that registeres a new peer"""

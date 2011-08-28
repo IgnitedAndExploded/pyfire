@@ -28,7 +28,6 @@ class StanzaProcessor(object):
 
     def __init__(self, local_domains=("localhost")):
         self.local_domains = local_domains
-        self.current_topic = None
         self.loop = ioloop.IOLoop.instance()
         self.ctx = zmq.Context()
 
@@ -63,9 +62,8 @@ class StanzaProcessor(object):
 
     def handle_stanza(self, msg):
         """This actually handles the incomming stamzas"""
-        if self.current_topic is None:
-            self.current_topic = msg[0]
-            return
+        log.debug(str(msg))
+        topic, stanza = msg[:2]
 
         # TODO: check if we really want to handle the topis set..
         tree = cPickle.loads(msg[0].split('\n'))
