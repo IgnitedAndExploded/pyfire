@@ -20,6 +20,7 @@ import errno
 import functools
 import contextlib
 import socket
+import thread
 
 from zmq.eventloop import ioloop
 from tornado import iostream
@@ -39,7 +40,8 @@ def start_client_listener(io_loop):
 if __name__ == '__main__':
     io_loop = ioloop.IOLoop.instance()
     # create a forwader/router for internal communication
-    fwd = zmq_forwarder.ZMQForwarder(io_loop)
+    fwd = zmq_forwarder.ZMQForwarder()
+    thread.start_new_thread(fwd.start, ())
 
     start_client_listener(io_loop)
     try:
