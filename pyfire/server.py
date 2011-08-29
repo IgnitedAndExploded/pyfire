@@ -24,7 +24,7 @@ class XMPPServer(object):
     """A non-blocking, single-threaded XMPP server."""
 
     def __init__(self, io_loop=None):
-        self.io_loop = io_loop
+        self.io_loop = io_loop or ioloop.IOLoop.instance()
         self._sockets = {}  # fd -> socket object
         self._started = False
         self._connections = {}
@@ -93,8 +93,6 @@ class XMPPServer(object):
         """Starts this server in the IOLoop."""
 
         assert not self._started
-        if not self.io_loop:
-            self.io_loop = ioloop.IOLoop.instance()
         for fd in self._sockets.keys():
             self.io_loop.add_handler(fd, self._handle_events,
                                      ioloop.IOLoop.READ)
