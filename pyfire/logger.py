@@ -44,7 +44,7 @@ try:
             self._disabled = value
 
         def _get_disabled(self):
-            return global_disable or self.disabled
+            return global_disable or self._disabled
 
         disabled = property(_get_disabled, _set_disabled)
 
