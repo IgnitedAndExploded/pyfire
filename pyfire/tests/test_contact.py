@@ -12,6 +12,7 @@
 import xml.etree.ElementTree as ET
 
 from pyfire.contact import Contact
+from pyfire.jid import JID
 from pyfire.tests import PyfireTestCase
 
 
@@ -22,6 +23,7 @@ class TestContact(PyfireTestCase):
         with self.assertRaises(TypeError) as cm:
             cont = Contact()
         cont = Contact('test')
+        cont = Contact(JID('test'))
 
     def test_init_optional_attrs(self):
         cont = Contact('test', subscription="both")
@@ -51,6 +53,10 @@ class TestContact(PyfireTestCase):
         result = '<item jid="test" />'
         cont.approved = None
         self.assertEqual(ET.tostring(cont.to_element()), result)
+        result = '<item ask="subscribe" jid="test" name="Joe" />'
+        cont.ask = 'subscribe'
+        cont.name = "Joe"
+        self.assertEqual(ET.tostring(cont.to_element()), result)
 
     def test_fromstring(self):
         result = '<item approved="false" jid="test" subscription="none" />'
@@ -59,7 +65,7 @@ class TestContact(PyfireTestCase):
         out_element = cont.to_element()
         self.assertEqual(ET.tostring(out_element), result)
 
-        result = '<item approved="false" jid="test" subscription="none"><group>test1</group></item>'
+        result = '<item approved="true" jid="test" subscription="none"><group>test1</group></item>'
         in_element = ET.fromstring(result)
         cont = Contact.from_element(in_element)
         out_element = cont.to_element()
@@ -70,3 +76,14 @@ class TestContact(PyfireTestCase):
         in_element = ET.fromstring(result)
         with self.assertRaises(ValueError):
             cont = Contact.from_element(in_element)
+
+        result = '<failitem approved="true" jid="test" subscription="none" />'
+        in_element = ET.fromstring(result)
+        with self.assertRaises(ValueError):
+            cont = Contact.from_element(in_element)
+
+    def test_bad_jid(self):
+        jid = JID('test')
+        jid.domain = ''
+        with self.assertRaises(ValueError):
+            cont = Contact(jid)
