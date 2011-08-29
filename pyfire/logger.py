@@ -12,6 +12,8 @@
 import warnings
 import pyfire.configuration as config
 
+global_disable = False
+
 try:
     import logbook
     import logbook.more
@@ -36,6 +38,15 @@ try:
                 level = 'ERROR'
             super(Logger, self).__init__(classname, getattr(logbook, level))
             self.handlers.append(logbook.more.ColorizedStderrHandler())
+            self._disabled = False
+
+        def _set_disabled(self, value):
+            self._disabled = value
+
+        def _get_disabled(self):
+            return global_disable or self.disabled
+
+        disabled = property(_get_disabled, _set_disabled)
 
 except ImportError:
     class Logger(object):
