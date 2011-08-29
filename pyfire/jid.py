@@ -65,7 +65,7 @@ class JID(object):
     def validate(self, raise_error=False):
         """Validate JID, either return a bool or raise :py:exc:`ValueErrors`"""
 
-        if len(self.domain) < 1:
+        if self.domain is None or len(self.domain) < 1:
             if raise_error:
                 raise ValueError("A domain is required")
             else:
