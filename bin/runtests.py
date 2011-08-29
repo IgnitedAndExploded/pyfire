@@ -37,7 +37,9 @@ if __name__ == '__main__':
         suite = unittest.TestLoader().discover(testpath)
         unittest.TextTestRunner(verbosity=args.verbosity).run(suite)
         cov.stop()
-        cov.html_report(directory=pjoin(path, '_build', 'coveragereport'))
+        target_dir = pjoin(path, '_build', 'coveragereport')
+        cov.html_report(directory=target_dir)
+        print "Created report in", target_dir
     else:
         suite = unittest.TestLoader().discover(testpath)
         unittest.TextTestRunner(verbosity=args.verbosity).run(suite)
