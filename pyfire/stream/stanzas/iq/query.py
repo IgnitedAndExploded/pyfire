@@ -32,10 +32,10 @@ class Query(object):
         """ TODO: return real roster """
         contact = Contact("test@localhost")
         contact.subscription = "both"
-        contact.approved = "true"
+        contact.approved = True
         self.response.append(contact.to_element())
         contact = Contact("test2@localhost")
-        contact.approved = "true"
+        contact.approved = True
         contact.subscription = "both"
         self.response.append(contact.to_element())
 
