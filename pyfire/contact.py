@@ -13,38 +13,99 @@ import xml.etree.ElementTree as ET
 
 
 class Contact(object):
-    """Jabber Contact, aka roster item"""
+    """Jabber Contact, aka roster item. It has some really strict attribute
+       setting mechanism as it leads to all kinds of fantastic crashes with
+       clients which should be avoided really.
+    """
 
-    __slots__ = ('approved', 'ask', 'jid', 'name', 'subscription', 'group')
+    __slots__ = ('__approved', '__ask', 'jid', 'name', '__subscription', 'group')
 
-    def __init__(self, jid):
+    allowed_approved = frozenset([None, True, False])
+    allowed_ask = frozenset([None, "subscribe"])
+    allowed_subscription = frozenset([None, "none", "from", "to", "remove", "both"])
+
+    def __init__(self, jid, **kwds):
         super(Contact, self).__init__()
 
         # required
-        self.jid = JID(jid)
+        if isinstance(jid, basestring):
+            self.jid = JID(jid)
+        else:
+            self.jid = jid
+            self.jid.validate(raise_error=True)
 
         # optional
-        self.approved = None
+        self.approved = False
         self.ask = None
         self.name = None
-        self.subscription = None
+        self.subscription = "none"
         self.group = []
 
+        for name, value in kwds.iteritems():
+            setattr(self, name, value)
+
+    def __setattr__(self, name, value):
+        hidden_name = "__%s" % name
+        really_hidden_name = "_%s__%s" % (self.__class__.__name__, name)
+        if hasattr(self, hidden_name) or hidden_name in self.__slots__:
+            range_var = "allowed_%s" % name
+            if value in getattr(self, range_var):
+                object.__setattr__(self, really_hidden_name, value)
+            else:
+                raise ValueError("'%s' not in allowed set of values" % value)
+        elif name in self.__slots__:
+            object.__setattr__(self, name, value)
+        else:
+            raise AttributeError("'%s' object has no attribute '%s'" % (self.__class__.__name__, name))
+
+    @property
+    def ask(self):
+        return self.__ask
+
+    @property
+    def approved(self):
+        return self.__approved
+
+    @property
+    def subscription(self):
+        return self.__subscription
+
     def to_element(self):
-        """Returns the Contact as etree.ElementTree.Element object"""
+        """Formats contact as `class`:ET.Element object"""
 
         element = ET.Element("item")
-        if not self.approved == None:
-            element.set("approved", self.approved)
-        if not self.ask == None:
+        if self.approved is not None:
+            element.set("approved", 'true' if self.approved else 'false')
+        if self.ask is not None:
             element.set("ask", self.ask)
-        element.set("jid", str(self.jid.bare))
-        if not self.name == None:
+        element.set("jid", str(self.jid))
+        if self.name is not None:
             element.set("name", self.name)
-        if not self.subscription == None:
+        if self.subscription is not None:
             element.set("subscription", self.subscription)
         for group in self.group:
-            group_element = ET.Element("group")
+            group_element = ET.SubElement(element, "group")
             group_element.text = group
-            element.append(group_element)
         return element
+
+    @staticmethod
+    def from_element(element):
+        """Creates contact instance from `class`:ET.Element"""
+
+        if element.tag != "item":
+            raise ValueError("Invalid element with tag %s" % element.tag)
+
+        cont = Contact(element.get('jid'))
+        cont.ask = element.get('ask')
+        cont.subscription = element.get('subscription')
+        approved = element.get('approved')
+        if approved == 'true':
+            cont.approved = True
+        elif approved == 'false':
+            cont.approved = False
+        else:
+            cont.approved = approved
+        for group in list(element):
+            if group.tag == "group":
+                cont.group.append(group.text)
+        return cont
