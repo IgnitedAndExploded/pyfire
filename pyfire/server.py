@@ -187,14 +187,15 @@ class XMPPConnection(object):
         except IOError:
             self.done()
 
-    def send_string(self, string):
+    def send_string(self, string, raises_error=True):
         """Sends a string to client"""
 
         try:
             self.stream.write(string)
             log.debug("Sent string to client:" + string)
         except IOError:
-            pass
+            if raises_error:
+                raise
 
     def send_element(self, element):
         """Serializes and send an ET Element"""
@@ -206,10 +207,8 @@ class XMPPConnection(object):
     def stop_connection(self):
         """Sends stream close, discards stream closed errors"""
 
-        try:
-            self.stream.write("</stream:stream>")
-        except IOError:
-            pass
+        self.send_string("</stream:stream>")
+        self.done()
 
     def done(self):
         """Does cleanup work"""
