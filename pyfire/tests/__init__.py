@@ -11,6 +11,10 @@
 
 import unittest
 
+# Disable logging if we run unit tests
+import pyfire.logger
+pyfire.logger.global_disable = True
+
 
 class PyfireTestCase(unittest.TestCase):
     """All our unittests are based on this class"""
