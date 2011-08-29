@@ -10,6 +10,7 @@
 :license: BSD, see LICENSE for more details.
 """
 
+import uuid
 import random
 import zmq
 from zmq.eventloop import ioloop, zmqstream
@@ -33,7 +34,7 @@ class ZMQForwarder(object):
         self.command_channel = zmqstream.ZMQStream(comm_sock, self.loop)
         self.command_channel.on_recv(self.register_peer, False)
 
-        self.output_url = 'tcp://127.0.0.1:%i' % (random.randint(15000, 15500))
+        self.output_url = 'ipc://pyfire-forwarder-%s' % (uuid.uuid4().hex)
         log.debug("Using publishing url " + self.output_url)
         self.output = self.ctx.socket(zmq.PUB)
         self.output.bind(self.output_url)
@@ -50,7 +51,7 @@ class ZMQForwarder(object):
     def register_peer(self, msg):
         """Callback for command channel that registeres a new peer"""
 
-        subscriber = 'tcp://127.0.0.1:%i' % (random.randint(5600, 5700))
+        subscriber = 'ipc://pyfire-forwarder-%s' % (uuid.uuid4().hex)
         log.info('registering new subscriber at ' + subscriber)
         new_sub = self.ctx.socket(zmq.SUB)
         new_sub.connect(subscriber)
