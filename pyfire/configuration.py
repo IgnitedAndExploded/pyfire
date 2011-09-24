@@ -43,3 +43,4 @@ def getlist(section, option, separator=','):
 get = config.get
 getint = config.getint
 NoOptionError = ConfigParser.NoOptionError
+set = config.set
