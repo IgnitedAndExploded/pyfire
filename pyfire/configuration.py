@@ -33,7 +33,6 @@ config.add_section('logging')
 config.set('logging', 'global_level', 'ERROR')
 
 config.add_section('ipc')
-config.set('ipc', 'forwarder_command_channel', 'tcp://127.0.0.1:42040')
 config.set('ipc', 'forwarder', 'tcp://127.0.0.1:42042')
 
 config.read(['pyfire.cfg', os.path.expanduser('~/.pyfire.cfg')])

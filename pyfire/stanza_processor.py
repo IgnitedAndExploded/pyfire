@@ -16,6 +16,7 @@ from zmq.eventloop import ioloop, zmqstream
 import xml.etree.ElementTree as ET
 
 from pyfire.logger import Logger
+from pyfire.zmq_forwarder import ZMQForwarder_message
 from pyfire import configuration as config
 from pyfire.stream.stanzas import iq, message, presence
 from pyfire.stream.stanzas.errors import StanzaError, FeatureNotImplementedError
@@ -31,13 +32,10 @@ class StanzaProcessor(object):
         self.loop = ioloop.IOLoop()
         self.ctx = zmq.Context()
 
+        log.debug('Registering StanzaProcessor at forwarder..')
         # connect push socket to forwarder
         self.forwarder = self.ctx.socket(zmq.PUSH)
         self.forwarder.connect(config.get('ipc', 'forwarder'))
-
-        log.debug('Registering StanzaProcessor at forwarder..')
-        router = self.ctx.socket(zmq.REQ)
-        router.connect(config.get('ipc', 'forwarder_command_channel'))
 
         pull_socket = self.ctx.socket(zmq.PULL)
         stream = zmqstream.ZMQStream(pull_socket, self.loop)
@@ -45,8 +43,9 @@ class StanzaProcessor(object):
         port = pull_socket.bind_to_random_port('tcp://127.0.0.1')
 
         ## TODO: add auth for authenticating us at the forwarder when it supports it
-        router.send_pyobj(('tcp://127.0.0.1:'+str(port), local_domains))
-        router.close()
+        reg_msg = ZMQForwarder_message('REGISTER')
+        reg_msg.attributes = ('tcp://127.0.0.1:'+str(port), local_domains)
+        self.forwarder.send_pyobj( reg_msg )
 
         # init the handlers
         self.stanza_handlers = {

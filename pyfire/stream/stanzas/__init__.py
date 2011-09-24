@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ET
 import zmq
 from zmq.eventloop.zmqstream import ZMQStream
 
+from pyfire.zmq_forwarder import ZMQForwarder_message
 from pyfire.auth.sasl import SASLAuthHandler, MalformedRequestError
 import pyfire.configuration as config
 from pyfire.jid import JID
@@ -139,18 +140,16 @@ class TagHandler(object):
 
         # Connect to forwarder to receive stanzas sent back to client
         log.debug('Registering Client at forwarder..')
-        router = zmq.Context().socket(zmq.REQ)
-        router.connect(config.get('ipc', 'forwarder_command_channel'))
-
         pull_socket = zmq.Context().socket(zmq.PULL)
         self.processed_stream = ZMQStream(pull_socket,
                                           self.connection.stream.io_loop)
         self.processed_stream.on_recv(self.masked_send_list, False)
         port = pull_socket.bind_to_random_port('tcp://127.0.0.1')
 
-        # TODO: add auth for authenticating us at the forwarder when it supports it
-        router.send_pyobj(('tcp://127.0.0.1:'+str(port), self.jid))
-        router.close()
+        ## TODO: add auth for authenticating us at the forwarder when it supports it
+        reg_msg = ZMQForwarder_message('REGISTER')
+        reg_msg.attributes = ('tcp://127.0.0.1:'+str(port), self.jid)
+        self.publisher.send_pyobj( reg_msg )
 
         # Send registered resource back to client
         response_element = ET.Element("iq")

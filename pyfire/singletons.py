@@ -71,6 +71,10 @@ class StanzaPublisher(object):
         with _publisher_lock:
             self.router.send(msg)
 
+    def send_pyobj(self, msg):
+        with _publisher_lock:
+            self.router.send_pyobj(msg)
+
 _validation_registry = None
 _validation_registry_lock = allocate_lock()
 
