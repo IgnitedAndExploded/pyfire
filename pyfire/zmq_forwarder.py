@@ -21,7 +21,6 @@ import xml.etree.ElementTree as ET
 from pyfire.jid import JID
 from pyfire.logger import Logger
 from pyfire.stream.errors import InternalServerError
-from pyfire.stream.stanzas.errors import ServiceUnavailableError
 
 log = Logger(__name__)
 
@@ -77,6 +76,8 @@ class ZMQForwarder(object):
             log.debug("Unknown message destination..")
             # Do not send errors if we cant deliver error messages
             if stanza.find('error') is None:
+                # import error here on demand to prevent import loop
+                from pyfire.stream.stanzas.errors import ServiceUnavailableError
                 error_message = ServiceUnavailableError(stanza)
                 self.route_stanza(error_message.element, cPickle.dumps(error_message.element))
 
