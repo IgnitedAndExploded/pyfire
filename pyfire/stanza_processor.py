@@ -31,22 +31,22 @@ class StanzaProcessor(object):
         self.loop = ioloop.IOLoop()
         self.ctx = zmq.Context()
 
+        # connect push socket to forwarder
+        self.forwarder = self.ctx.socket(zmq.PUSH)
+        self.forwarder.connect(config.get('ipc', 'forwarder'))
+
         log.debug('Registering StanzaProcessor at forwarder..')
         router = self.ctx.socket(zmq.REQ)
         router.connect(config.get('ipc', 'forwarder_command_channel'))
 
-        # TODO: add auth for authenticating us at the forwarder when it supports it
-        router.send(' ')
-        self.pub_url, self.sub_url = router.recv_json()
-        router.close()
+        pull_socket = self.ctx.socket(zmq.PULL)
+        stream = zmqstream.ZMQStream(pull_socket, self.loop)
+        stream.on_recv(self.handle_stanza, False)
+        port = pull_socket.bind_to_random_port('tcp://127.0.0.1')
 
-        self.pub_socket = self.ctx.socket(zmq.PUB)
-        self.pub_socket.bind(self.pub_url)
-        sub_socket = self.ctx.socket(zmq.SUB)
-        sub_socket.connect(self.sub_url)
-        sub_socket.setsockopt(zmq.SUBSCRIBE, '')
-        substream = zmqstream.ZMQStream(sub_socket, self.loop)
-        substream.on_recv(self.handle_stanza, False)
+        ## TODO: add auth for authenticating us at the forwarder when it supports it
+        router.send_pyobj(('tcp://127.0.0.1:'+str(port), local_domains))
+        router.close()
 
         # init the handlers
         self.stanza_handlers = {
@@ -72,7 +72,7 @@ class StanzaProcessor(object):
 
                     response = self.stanza_handlers[tree.tag].handle(tree)
                     if response is not None:
-                        self.pub_socket.send(cPickle.dumps(response))
+                        self.forwarder.send(cPickle.dumps(response))
                 except StanzaError, e:
                     # send caught errors back to sender
-                    self.pub_socket.send(cPickle.dumps(e.element))
+                    self.forwarder.send(cPickle.dumps(e.element))

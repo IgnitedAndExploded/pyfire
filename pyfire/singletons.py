@@ -63,21 +63,13 @@ class StanzaPublisher(object):
         self.zmq_context = zmq.Context()
 
         # connect to forwarder/router
-        log.debug('Registering StanzaPublisher at forwarder..')
-        router = self.zmq_context.socket(zmq.REQ)
-        router.connect(config.get('ipc', 'forwarder_command_channel'))
-
-        # TODO: add auth for authenticating us at the forwarder when it supports it
-        router.send(' ')
-        self.pub_url, self.sub_url = router.recv_json()
-        router.close()
-
-        self.pub_socket = self.zmq_context.socket(zmq.PUB)
-        self.pub_socket.bind(self.pub_url)
+        log.debug('Connecting StanzaPublisher to forwarder..')
+        self.router = self.zmq_context.socket(zmq.PUSH)
+        self.router.connect(config.get('ipc', 'forwarder'))
 
     def send(self, msg):
         with _publisher_lock:
-            self.pub_socket.send(msg)
+            self.router.send(msg)
 
 _validation_registry = None
 _validation_registry_lock = allocate_lock()

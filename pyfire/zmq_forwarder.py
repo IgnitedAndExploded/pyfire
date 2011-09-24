@@ -3,8 +3,8 @@
 """
     pyfire.zmq_forwarder
 
-    This Class holds a forwarder implementation for ZMQs PUB/SUB messages as
-    the included forwarder device does not work as espected.
+    This Class holds a stanza router implementation for XMPP stanzas transmitted via
+    ZMQs PUSH/PULL messages.
 
 :copyright: 2011 by the pyfire Team, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
@@ -12,9 +12,11 @@
 
 import uuid
 import random
+import cPickle
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 
+from pyfire.jid import JID
 import pyfire.configuration as config
 from pyfire.logger import Logger
 
@@ -34,10 +36,12 @@ class ZMQForwarder(object):
         self.command_channel = zmqstream.ZMQStream(comm_sock, self.loop)
         self.command_channel.on_recv(self.register_peer, False)
 
-        self.output_url = 'ipc://pyfire-forwarder-%s' % (uuid.uuid4().hex)
-        log.debug("Using publishing url " + self.output_url)
-        self.output = self.ctx.socket(zmq.PUB)
-        self.output.bind(self.output_url)
+        self.pull_sock = self.ctx.socket(zmq.PULL)
+        self.pull_sock.bind(config.get('ipc', 'forwarder'))
+        self.stream = zmqstream.ZMQStream(self.pull_sock, self.loop)
+        self.stream.on_recv(self.handle_stanza, False)
+
+        self.peers = dict()
 
     def start(self):
         """Starts the IOloop"""
@@ -46,16 +50,36 @@ class ZMQForwarder(object):
     def handle_stanza(self, msg):
         """Callback handler used for forwarding received stanzas"""
 
-        self.output.send_multipart(msg)
+        for message in msg:
+            stanza = cPickle.loads(message.bytes)
+            stanza_source = stanza.get('from')
+            stanza_destination = stanza.get('to')
+            log.debug("received stanza from %s to %s" % (stanza_source, stanza_destination))
+            if stanza_destination is None:
+                destination = JID(stanza_source).domain
+                log.debug("setting to attribute to " + destination)
+                stanza_destination = destination
+
+            stanza_destination = JID(stanza_destination)
+            if stanza_destination.bare in self.peers:
+                log.debug("routing stanza from %s to %s" % (stanza_source, stanza_destination))
+                self.peers[stanza_destination.bare][1].send(message.bytes)
+            else:
+                log.debug("Unknown message destination..")
 
     def register_peer(self, msg):
         """Callback for command channel that registeres a new peer"""
 
-        subscriber = 'ipc://pyfire-forwarder-%s' % (uuid.uuid4().hex)
-        log.info('registering new subscriber at ' + subscriber)
-        new_sub = self.ctx.socket(zmq.SUB)
-        new_sub.connect(subscriber)
-        new_sub.setsockopt(zmq.SUBSCRIBE, '')
-        substream = zmqstream.ZMQStream(new_sub, self.loop)
-        substream.on_recv(self.handle_stanza, False)
-        self.command_channel.send_json((subscriber, self.output_url))
+        # TODO: Add auth
+        for me in list(msg):
+            (push_url, jids) = cPickle.loads(me.bytes)
+            log.info('registering new peer at '+push_url)
+            peer = self.ctx.socket(zmq.PUSH)
+            peer.connect(push_url)
+            if isinstance(jids, JID):
+                jids = [jids,]
+            for jid in jids:
+                log.info('adding routing entry for '+unicode(jid))
+                jid = JID(jid)
+                self.peers[jid.bare] = (jid, peer)
+        self.command_channel.send('OK')

@@ -137,6 +137,21 @@ class TagHandler(object):
             raise ConflictError
         log.info("Bound connection as %s" % str(self.jid))
 
+        # Connect to forwarder to receive stanzas sent back to client
+        log.debug('Registering Client at forwarder..')
+        router = zmq.Context().socket(zmq.REQ)
+        router.connect(config.get('ipc', 'forwarder_command_channel'))
+
+        pull_socket = zmq.Context().socket(zmq.PULL)
+        self.processed_stream = ZMQStream(pull_socket,
+                                          self.connection.stream.io_loop)
+        self.processed_stream.on_recv(self.masked_send_list, False)
+        port = pull_socket.bind_to_random_port('tcp://127.0.0.1')
+
+        # TODO: add auth for authenticating us at the forwarder when it supports it
+        router.send_pyobj(('tcp://127.0.0.1:'+str(port), self.jid))
+        router.close()
+
         # Send registered resource back to client
         response_element = ET.Element("iq")
         response_element.set("type", "result")
@@ -162,15 +177,6 @@ class TagHandler(object):
         response_element = ET.Element("success")
         response_element.set("xmlns", handler.namespace)
         self.send_element(response_element)
-
-        # Subscribe to stanza responses
-        processed_stanzas_socket = zmq.Context().socket(zmq.SUB)
-        processed_stanzas_socket.connect(self.publisher.sub_url)
-        processed_stanzas_socket.setsockopt(zmq.SUBSCRIBE, '')
-
-        self.processed_stream = ZMQStream(processed_stanzas_socket,
-                                          self.connection.stream.io_loop)
-        self.processed_stream.on_recv(self.masked_send_list, False)
 
     def add_auth_options(self, feature_element):
         """Add supported auth mechanisms to feature element"""
