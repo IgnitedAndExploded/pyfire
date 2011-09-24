@@ -18,6 +18,7 @@ from zmq.eventloop import ioloop, zmqstream
 
 from pyfire.jid import JID
 from pyfire.logger import Logger
+from pyfire.stream.errors import InternalServerError
 
 log = Logger(__name__)
 
@@ -86,6 +87,8 @@ class ZMQForwarder(object):
                 log.info('adding routing entry for '+unicode(jid))
                 jid = JID(jid)
                 self.peers[jid.bare] = (jid, peer)
+        else:
+            raise InternalServerError()
 
 
 class ZMQForwarder_message(object):
