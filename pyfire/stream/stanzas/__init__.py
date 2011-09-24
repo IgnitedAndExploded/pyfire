@@ -27,8 +27,8 @@ from pyfire.stream.errors import *
 
 log = Logger(__name__)
 
-BIND_NS="urn:ietf:params:xml:ns:xmpp-bind"
-SESSION_NS="urn:ietf:params:xml:ns:xmpp-session"
+BIND_NS = "urn:ietf:params:xml:ns:xmpp-bind"
+SESSION_NS = "urn:ietf:params:xml:ns:xmpp-session"
 
 
 class TagHandler(object):
@@ -150,8 +150,8 @@ class TagHandler(object):
 
         ## TODO: add auth for authenticating us at the forwarder when it supports it
         reg_msg = ZMQForwarder_message('REGISTER')
-        reg_msg.attributes = ('tcp://127.0.0.1:'+str(port), self.jid)
-        self.publisher.send_pyobj( reg_msg )
+        reg_msg.attributes = ('tcp://127.0.0.1:' + str(port), self.jid)
+        self.publisher.send_pyobj(reg_msg)
 
         # Send registered resource back to client
         response_element = ET.Element("iq")

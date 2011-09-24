@@ -22,6 +22,7 @@ log = Logger(__name__)
 _known_jids = None
 _known_jids_lock = allocate_lock()
 
+
 def get_known_jids():
     """Returns the list with known jids"""
     global _known_jids
@@ -30,6 +31,7 @@ def get_known_jids():
         _known_jids = ThreadSafeList()
     _known_jids_lock.release()
     return _known_jids
+
 
 class ThreadSafeList(list):
     """List implementation with threadsafe append and remove methods"""
@@ -45,6 +47,7 @@ class ThreadSafeList(list):
 
 _publisher = None
 _publisher_lock = allocate_lock()
+
 
 def get_publisher():
     """Returns the application publish socket"""
@@ -77,6 +80,7 @@ class StanzaPublisher(object):
 
 _validation_registry = None
 _validation_registry_lock = allocate_lock()
+
 
 def get_validation_registry():
     """Returns the jid auth validation registry"""

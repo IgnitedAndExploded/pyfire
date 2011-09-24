@@ -90,20 +90,20 @@ class ZMQForwarder(object):
 
         if msg.command == 'REGISTER':
             (push_url, jids) = msg.attributes
-            log.info('registering new peer at '+push_url)
+            log.info('registering new peer at ' + push_url)
             peer = self.ctx.socket(zmq.PUSH)
             peer.connect(push_url)
             if isinstance(jids, JID):
-                jids = [jids,]
+                jids = [jids, ]
             for jid in jids:
-                log.info('adding routing entry for '+unicode(jid))
+                log.info('adding routing entry for ' + unicode(jid))
                 jid = JID(jid)
                 try:
                     # append to bare jids list of existing connections
                     self.peers[jid.bare].append((jid, peer))
                 except KeyError:
                     # create new entry
-                    self.peers[jid.bare] = [(jid, peer),]
+                    self.peers[jid.bare] = [(jid, peer), ]
         else:
             raise InternalServerError()
 

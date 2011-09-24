@@ -36,13 +36,13 @@ class TestZMQForwarder(PyfireTestCase):
 
     def test_register_peer(self):
         reg_cmd = zmq_forwarder.ZMQForwarder_message('REGISTER')
-        reg_cmd.attributes = ('tcp://127.0.0.1:1234', ['localhost',])
+        reg_cmd.attributes = ('tcp://127.0.0.1:1234', ['localhost', ])
         self.forwarder.handle_forwarder_message(reg_cmd)
-        self.assertEqual( len(self.forwarder.peers), 1)
+        self.assertEqual(len(self.forwarder.peers), 1)
 
     def test_unknown_command(self):
         reg_cmd = zmq_forwarder.ZMQForwarder_message('NOT_IMPLEMENTED')
-        reg_cmd.attributes = ('tcp://127.0.0.1:1234', ['localhost',])
+        reg_cmd.attributes = ('tcp://127.0.0.1:1234', ['localhost', ])
         with self.assertRaises(InternalServerError):
             self.forwarder.handle_forwarder_message(reg_cmd)
 
@@ -54,7 +54,7 @@ class TestZMQForwarder(PyfireTestCase):
         test_port = pull_socket.bind_to_random_port('tcp://127.0.0.1')
 
         reg_cmd = zmq_forwarder.ZMQForwarder_message('REGISTER')
-        reg_cmd.attributes = ('tcp://127.0.0.1:' + str(test_port), ['testhost',])
+        reg_cmd.attributes = ('tcp://127.0.0.1:' + str(test_port), ['testhost', ])
         forwarder.send_pyobj(reg_cmd)
 
         test_stanza = ET.Element('Iq')
@@ -74,7 +74,7 @@ class TestZMQForwarder(PyfireTestCase):
         test_port = pull_socket.bind_to_random_port('tcp://127.0.0.1')
 
         reg_cmd = zmq_forwarder.ZMQForwarder_message('REGISTER')
-        reg_cmd.attributes = ('tcp://127.0.0.1:' + str(test_port), ['testsender',])
+        reg_cmd.attributes = ('tcp://127.0.0.1:' + str(test_port), ['testsender', ])
         forwarder.send_pyobj(reg_cmd)
 
         test_stanza = ET.Element('Iq')
