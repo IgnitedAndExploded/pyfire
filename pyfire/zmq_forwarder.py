@@ -17,7 +17,6 @@ import zmq
 from zmq.eventloop import ioloop, zmqstream
 
 from pyfire.jid import JID
-import pyfire.configuration as config
 from pyfire.logger import Logger
 
 log = Logger(__name__)
@@ -26,13 +25,14 @@ log = Logger(__name__)
 class ZMQForwarder(object):
     """ZMQ Forwarder class"""
 
-    def __init__(self):
+    def __init__(self, forwarder_url):
         self.loop = ioloop.IOLoop()
         self.ctx = zmq.Context()
 
         # Create our PULL listener to listen to the world ;)
         self.pull_sock = self.ctx.socket(zmq.PULL)
-        self.pull_sock.bind(config.get('ipc', 'forwarder'))
+        log.debug('Listening at ' + forwarder_url)
+        self.pull_sock.bind(forwarder_url)
         self.stream = zmqstream.ZMQStream(self.pull_sock, self.loop)
         self.stream.on_recv(self.handle_stanza, False)
 

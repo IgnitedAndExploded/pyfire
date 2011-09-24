@@ -49,7 +49,7 @@ def start_client_listener():
 
 def fire_up():
     # create a forwader/router for internal communication
-    fwd = zmq_forwarder.ZMQForwarder()
+    fwd = zmq_forwarder.ZMQForwarder(config.get('ipc', 'forwarder'))
     thread.start_new_thread(fwd.start, ())
 
     # create a stamza processor for local domains
