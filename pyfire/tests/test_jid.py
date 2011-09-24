@@ -50,6 +50,14 @@ class TestJID(PyfireTestCase):
         jid = JID("host/res")
         self.assertEqual(jid.bare, "host")
 
+    def test_jid_operators(self):
+        a = JID("user@host/res")
+        b = JID("user@host/res")
+        self.assertTrue(a == b)
+        self.assertFalse(a != b)
+        self.assertTrue(a is not b)
+        self.assertFalse(a is b)
+
     def test_str(self):
         jids = [
             "host",

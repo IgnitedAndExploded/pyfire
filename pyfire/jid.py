@@ -51,6 +51,9 @@ class JID(object):
                self.domain == other.domain and \
                self.resource == other.resource
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __str__(self):
         if self.local is not None and \
            self.resource is not None:
