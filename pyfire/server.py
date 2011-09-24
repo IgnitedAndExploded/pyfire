@@ -197,17 +197,22 @@ class XMPPConnection(object):
             if raises_error:
                 raise
 
-    def send_element(self, element):
+    def send_element(self, element, raises_error=True):
         """Serializes and send an ET Element"""
 
         string = ET.tostring(element)
-        log.debug("Sending element to client:" + string)
-        self.stream.write(string)
+        log.debug("Sent element to client:" + string)
+        self.send_string(string, raises_error)
 
     def stop_connection(self):
         """Sends stream close, discards stream closed errors"""
 
-        self.send_string("</stream:stream>")
+        # Ignore IOErrors as stream already has been closed
+        # as there is no need so send stream end element on closed streams ;)
+        try:
+            self.send_string("</stream:stream>")
+        except IOError:
+            pass
         self.done()
 
     def done(self):

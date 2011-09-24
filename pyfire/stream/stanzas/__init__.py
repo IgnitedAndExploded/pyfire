@@ -106,11 +106,13 @@ class TagHandler(object):
         self.send_list(msgs)
 
     def send_list(self, msgs):
-        for msg in msgs:
-            tmp = cPickle.loads(msg.bytes)
-            if tmp.get("to") == str(self.jid) or tmp.get("to") == self.jid.bare:
-                tmp2 = ET.tostring(tmp)
-                self.send_string(tmp2)
+        try:
+            for msg in msgs:
+                tmp = cPickle.loads(msg.bytes)
+                if tmp.get("to") == str(self.jid) or tmp.get("to") == self.jid.bare:
+                    self.send_element(tmp)
+        except IOError:
+            self.connection.stop_connection()
 
     def set_resource(self, tree):
         """Set a resource on our JID"""
