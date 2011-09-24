@@ -69,10 +69,14 @@ class ZMQForwarder(object):
             stanza_destination = destination
 
         stanza_destination = JID(stanza_destination)
-        if stanza_destination.bare in self.peers:
-            log.debug("routing stanza from %s to %s" % (stanza_source, stanza_destination))
-            self.peers[stanza_destination.bare][1].send(raw_bytes)
-        else:
+        try:
+            for peer in self.peers[stanza_destination.bare]:
+                # Send to peer if the stanza has a bare jid as recipient
+                # or if the full jid matches
+                if stanza_destination.resource is None or stanza_destination == peer[0]:
+                    log.debug("routing stanza from %s to %s" % (stanza_source, stanza_destination))
+                    peer[1].send(raw_bytes)
+        except KeyError:
             log.debug("Unknown message destination..")
             # Do not send errors if we cant deliver error messages
             if stanza.find('error') is None:
@@ -94,7 +98,12 @@ class ZMQForwarder(object):
             for jid in jids:
                 log.info('adding routing entry for '+unicode(jid))
                 jid = JID(jid)
-                self.peers[jid.bare] = (jid, peer)
+                try:
+                    # append to bare jids list of existing connections
+                    self.peers[jid.bare].append((jid, peer))
+                except KeyError:
+                    # create new entry
+                    self.peers[jid.bare] = [(jid, peer),]
         else:
             raise InternalServerError()
 
