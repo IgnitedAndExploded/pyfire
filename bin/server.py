@@ -53,7 +53,7 @@ def fire_up():
     thread.start_new_thread(fwd.start, ())
 
     # create a stamza processor for local domains
-    stanza_proc = stanza_processor.StanzaProcessor(config.get('listeners', 'domains'))
+    stanza_proc = stanza_processor.StanzaProcessor(config.getlist('listeners', 'domains'))
     thread.start_new_thread(stanza_proc.start, ())
 
     # start listener for incomming Connections
