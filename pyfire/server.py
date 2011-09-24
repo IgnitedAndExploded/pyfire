@@ -200,9 +200,7 @@ class XMPPConnection(object):
     def send_element(self, element, raises_error=True):
         """Serializes and send an ET Element"""
 
-        string = ET.tostring(element)
-        log.debug("Sent element to client:" + string)
-        self.send_string(string, raises_error)
+        self.send_string(ET.tostring(element), raises_error)
 
     def stop_connection(self):
         """Sends stream close, discards stream closed errors"""
