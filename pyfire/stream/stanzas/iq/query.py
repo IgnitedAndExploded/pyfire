@@ -49,6 +49,7 @@ class Query(object):
         """XEP-0030"""
 
         features = [
+            """http://jabber.org/protocol/disco#info""", # XEP-0030 (myself)
             'urn:xmpp:ping',  # XEP-0199
         ]
 
