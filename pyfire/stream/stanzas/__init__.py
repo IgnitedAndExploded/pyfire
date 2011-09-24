@@ -45,6 +45,20 @@ class TagHandler(object):
         self.authenticated = False
         self.session_active = False
         self.publisher = get_publisher()
+        self.pull_url = None
+        self.pull_socket = None
+
+    def close(self):
+        """Is called when the client connection is closed to do cleanup work"""
+
+        # unregister from forwarder
+        if self.pull_socket is not None:
+            reg_msg = ZMQForwarder_message('UNREGISTER')
+            reg_msg.attributes = self.pull_url
+            self.publisher.send_pyobj(reg_msg)
+            self.processed_stream.close()
+            self.pull_socket.close()
+            self.pull_socket = None
 
     def contenthandler(self, tree):
         """Handles an incomming content tree"""
@@ -142,15 +156,16 @@ class TagHandler(object):
 
         # Connect to forwarder to receive stanzas sent back to client
         log.debug('Registering Client at forwarder..')
-        pull_socket = zmq.Context().socket(zmq.PULL)
-        self.processed_stream = ZMQStream(pull_socket,
+        self.pull_socket = zmq.Context().socket(zmq.PULL)
+        self.processed_stream = ZMQStream(self.pull_socket,
                                           self.connection.stream.io_loop)
         self.processed_stream.on_recv(self.masked_send_list, False)
-        port = pull_socket.bind_to_random_port('tcp://127.0.0.1')
+        port = self.pull_socket.bind_to_random_port('tcp://127.0.0.1')
+        self.pull_url = 'tcp://127.0.0.1:' + str(port)
 
         ## TODO: add auth for authenticating us at the forwarder when it supports it
         reg_msg = ZMQForwarder_message('REGISTER')
-        reg_msg.attributes = ('tcp://127.0.0.1:' + str(port), self.jid)
+        reg_msg.attributes = (self.pull_url, self.jid)
         self.publisher.send_pyobj(reg_msg)
 
         # Send registered resource back to client

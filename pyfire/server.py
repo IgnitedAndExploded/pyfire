@@ -208,6 +208,7 @@ class XMPPConnection(object):
         # Ignore IOErrors as stream already has been closed
         # as there is no need so send stream end element on closed streams ;)
         try:
+            self.taghandler.close()
             self.send_string("</stream:stream>")
         except IOError:
             pass
