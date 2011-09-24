@@ -16,9 +16,12 @@ import cPickle
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 
+import xml.etree.ElementTree as ET
+
 from pyfire.jid import JID
 from pyfire.logger import Logger
 from pyfire.stream.errors import InternalServerError
+from pyfire.stream.stanzas.errors import ServiceUnavailableError
 
 log = Logger(__name__)
 
@@ -72,6 +75,10 @@ class ZMQForwarder(object):
             self.peers[stanza_destination.bare][1].send(raw_bytes)
         else:
             log.debug("Unknown message destination..")
+            # Do not send errors if we cant deliver error messages
+            if stanza.find('error') is None:
+                error_message = ServiceUnavailableError(stanza)
+                self.route_stanza(error_message.element, cPickle.dumps(error_message.element))
 
     def handle_forwarder_message(self, msg):
         """Handles incoming command requests from peer"""
