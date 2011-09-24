@@ -60,11 +60,11 @@ class ZMQForwarder(object):
     def route_stanza(self, stanza, raw_bytes):
         """Takes care of routing stanzas supplied to their addressed destination"""
 
-        stanza_source = stanza.get('from')
+        stanza_source = JID(stanza.get('from'))
         stanza_destination = stanza.get('to')
         log.debug("received stanza from %s to %s" % (stanza_source, stanza_destination))
         if stanza_destination is None:
-            destination = JID(stanza_source).domain
+            destination = stanza_source.domain
             log.debug("setting to attribute to " + destination)
             stanza_destination = destination
 
@@ -73,8 +73,10 @@ class ZMQForwarder(object):
             for peer in self.peers[stanza_destination.bare]:
                 # Send to peer if the stanza has a bare jid as recipient
                 # or if the full jid matches
-                if stanza_destination.resource is None or stanza_destination == peer[0]:
-                    log.debug("routing stanza from %s to %s" % (stanza_source, stanza_destination))
+                if (stanza_destination.resource is None \
+                            and stanza_source != peer[0]) \
+                            or stanza_destination == peer[0]:
+                    log.debug("routing stanza from %s to %s" % (stanza_source, peer[0]))
                     peer[1].send(raw_bytes)
         except KeyError:
             log.debug("Unknown message destination..")
