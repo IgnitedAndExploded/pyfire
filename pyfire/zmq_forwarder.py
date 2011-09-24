@@ -106,6 +106,16 @@ class ZMQForwarder(object):
                 except KeyError:
                     # create new entry
                     self.peers[jid.bare] = [(jid, peer), ]
+        elif msg.command == 'UNREGISTER':
+            push_url = msg.attributes
+            log.info('unregistering peer at ' + push_url)
+            for bare_jid in self.peers.keys():
+                for peer in self.peers[bare_jid]:
+                    if peer[1] == push_url:
+                        self.peers.remove(peer)
+                        if len(self.peers) == 0:
+                            del self.peers[bare_jid]
+
         else:
             raise InternalServerError()
 
