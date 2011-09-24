@@ -10,6 +10,7 @@
 """
 
 import xml.etree.ElementTree as ET
+import unittest
 
 from pyfire.contact import Contact
 from pyfire.jid import JID
@@ -29,15 +30,18 @@ class TestContact(PyfireTestCase):
         cont = Contact('test', subscription="both")
         self.assertEqual(cont.subscription, "both")
 
+    @unittest.skip("Needs to be raised on DB persistence and checked there")
     def test_init_invalid_attr(self):
         with self.assertRaises(ValueError):
             cont = Contact('test', subscription="fail")
 
+    @unittest.skip("Needs to be raised on DB persistence and checked there")
     def test_invalid_value(self):
         cont = Contact('test')
         with self.assertRaises(ValueError):
             cont.subscription = "fail"
 
+    @unittest.skip("Needs to be raised on DB persistence and checked there")
     def test_invalid_attr(self):
         cont = Contact('test')
         with self.assertRaises(AttributeError):
@@ -71,6 +75,7 @@ class TestContact(PyfireTestCase):
         out_element = cont.to_element()
         self.assertEqual(ET.tostring(out_element), result)
 
+    @unittest.skip("Needs to be raised on DB persistence and checked there")
     def test_bad_fromstring(self):
         result = '<item approved="peng" jid="test" subscription="none" />'
         in_element = ET.fromstring(result)

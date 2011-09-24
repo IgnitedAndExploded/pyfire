@@ -18,4 +18,10 @@ pyfire.logger.global_disable = True
 
 class PyfireTestCase(unittest.TestCase):
     """All our unittests are based on this class"""
-    pass
+
+    def __init__(self, name):
+        super(PyfireTestCase, self).__init__(name)
+
+        # Define in-memory database for tests
+        import pyfire.configuration as config
+        config.set('database', 'dburi', 'sqlite://')
