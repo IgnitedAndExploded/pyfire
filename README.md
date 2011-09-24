@@ -9,6 +9,7 @@ Dependencies
 - Python 2.6 with ElementTree 1.3 or Python 2.7
 - Tornado
 - pyzmq (Python bindings for libzmq, ØMQ)
+- sqlalchemy
 
 Implemented RFC and XEP
 =======================
