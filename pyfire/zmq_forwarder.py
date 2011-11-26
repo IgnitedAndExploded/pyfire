@@ -17,6 +17,7 @@ import zmq
 from zmq.eventloop import ioloop, zmqstream
 
 import xml.etree.ElementTree as ET
+import pyfire.configuration as config
 
 from pyfire.jid import JID
 from pyfire.logger import Logger
@@ -91,7 +92,11 @@ class ZMQForwarder(object):
         """Handles incoming command requests from peer"""
 
         if msg.command == 'REGISTER':
-            (push_url, jids) = msg.attributes
+            (password, push_url, jids) = msg.attributes
+            log.info('peer is trying to register')
+            if password != config.get('ipc', 'password'):
+                log.info('Authorization failed')
+                return
             log.info('registering new peer at ' + push_url)
             peer = self.ctx.socket(zmq.PUSH)
             peer.connect(push_url)

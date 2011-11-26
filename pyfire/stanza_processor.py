@@ -42,9 +42,9 @@ class StanzaProcessor(object):
         stream.on_recv(self.handle_stanza, False)
         port = pull_socket.bind_to_random_port('tcp://127.0.0.1')
 
-        ## TODO: add auth for authenticating us at the forwarder when it supports it
+        # register connection at forwarder
         reg_msg = ZMQForwarder_message('REGISTER')
-        reg_msg.attributes = ('tcp://127.0.0.1:' + str(port), local_domains)
+        reg_msg.attributes = (config.get('ipc', 'password'), 'tcp://127.0.0.1:' + str(port), local_domains)
         self.forwarder.send_pyobj(reg_msg)
 
         # init the handlers

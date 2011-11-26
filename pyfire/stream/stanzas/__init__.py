@@ -165,7 +165,7 @@ class TagHandler(object):
 
         ## TODO: add auth for authenticating us at the forwarder when it supports it
         reg_msg = ZMQForwarder_message('REGISTER')
-        reg_msg.attributes = (self.pull_url, self.jid)
+        reg_msg.attributes = (config.get('ipc', 'password'), self.pull_url, self.jid)
         self.publisher.send_pyobj(reg_msg)
 
         # Send registered resource back to client
