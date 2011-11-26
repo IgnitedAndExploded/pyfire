@@ -71,7 +71,11 @@ class StanzaProcessor(object):
 
                     response = self.stanza_handlers[tree.tag].handle(tree)
                     if response is not None:
-                        self.forwarder.send(cPickle.dumps(response))
+                        if isinstance(response, (list, tuple)):
+                            for resp in response:
+                                self.forwarder.send(cPickle.dumps(resp))
+                        else:
+                            self.forwarder.send(cPickle.dumps(response))
                 except StanzaError, e:
                     # send caught errors back to sender
                     self.forwarder.send(cPickle.dumps(e.element))
