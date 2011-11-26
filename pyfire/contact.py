@@ -51,10 +51,10 @@ class Contact(Base):
 
     id = Column(Integer, primary_key=True)
     approved = Column(Boolean)
-    ask = Column(Enum(['subscribe']))
+    ask = Column(Enum('subscribe'))
     jid = Column(String(3072), nullable=False)
     name = Column(String(255))
-    subscription = Column(Enum(["none", "from", "to", "remove", "both"]))
+    subscription = Column(Enum("none", "from", "to", "remove", "both"))
     groups = relationship(Group, secondary=contacts_groups)
     roster = relationship(Roster, backref=backref('contacts'))
     roster_id = Column(Integer, ForeignKey('rosters.id'), nullable=False)
