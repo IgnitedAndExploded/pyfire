@@ -163,7 +163,6 @@ class TagHandler(object):
         port = self.pull_socket.bind_to_random_port('tcp://127.0.0.1')
         self.pull_url = 'tcp://127.0.0.1:' + str(port)
 
-        ## TODO: add auth for authenticating us at the forwarder when it supports it
         reg_msg = ZMQForwarder_message('REGISTER')
         reg_msg.attributes = (config.get('ipc', 'password'), self.pull_url, self.jid)
         self.publisher.send_pyobj(reg_msg)
