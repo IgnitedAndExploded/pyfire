@@ -10,13 +10,16 @@
 """
 
 import xml.etree.ElementTree as ET
-from pyfire.contact import Contact
+
+from pyfire.contact import Contact, Roster
+from pyfire.jid import JID
+from pyfire.storage import Session
 
 
 class Query(object):
     """Handles all iq-query xmpp frames"""
 
-    __slots__ = ('handler', 'request', 'response')
+    __slots__ = ('handler', 'request', 'response', 'session')
 
     def handle(self, request):
         self.request = request
@@ -28,19 +31,22 @@ class Query(object):
 
     def roster(self):
         """RFC6121 Section 2"""
+
+        session = Session()
+        senderjid = JID(self.response.get("from"))
+        roster = session.query(Roster).filter_by(jid=senderjid.bare).first()
+        if roster is None:
+            roster = Roster(jid=senderjid.bare)
+            session.add(roster)
+            session.commit()
+
+        for contact in roster.contacts:
+            self.response.append(contact.to_element())
         self.response.set("xmlns", """jabber:iq:roster""")
-        """ TODO: return real roster """
-        contact = Contact("test@localhost")
-        contact.subscription = "both"
-        contact.approved = True
-        self.response.append(contact.to_element())
-        contact = Contact("test2@localhost")
-        contact.approved = True
-        contact.subscription = "both"
-        self.response.append(contact.to_element())
 
     def last(self):
         """XEP-0012"""
+
         self.response.set("xmlns", "jabber.iq.last")
         """ TODO: set real last activity of requested contact """
         self.response.set("seconds", "0")

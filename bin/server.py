@@ -48,6 +48,10 @@ def start_client_listener():
         print "exited cleanly"
 
 def fire_up():
+    import pyfire.storage
+    import pyfire.contact
+    pyfire.storage.Base.metadata.create_all(pyfire.storage.engine)
+
     # create a forwader/router for internal communication
     fwd = zmq_forwarder.ZMQForwarder(config.get('ipc', 'forwarder'))
     thread.start_new_thread(fwd.start, ())
