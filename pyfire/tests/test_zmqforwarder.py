@@ -33,6 +33,7 @@ class TestZMQForwarder(PyfireTestCase):
     def tearDown(self):
         self.forwarder.loop.stop()
         self.forwarder.pull_sock.close()
+        time.sleep(0.2)
 
     def test_register_peer(self):
         reg_cmd = zmq_forwarder.ZMQForwarder_message('REGISTER')
