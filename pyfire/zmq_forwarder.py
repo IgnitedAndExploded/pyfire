@@ -61,6 +61,11 @@ class ZMQForwarder(object):
     def route_stanza(self, stanza, raw_bytes):
         """Takes care of routing stanzas supplied to their addressed destination"""
 
+        # Stanzas without a sender MUST be ignored..
+        if stanza.get('from') is None:
+            log.info('ignoring stanza without from attribute for ' + stanza.get('to'))
+            log.debug(ET.tostring(stanza))
+            return
         stanza_source = JID(stanza.get('from'))
         stanza_destination = stanza.get('to')
         log.debug("received stanza from %s to %s" % (stanza_source, stanza_destination))
