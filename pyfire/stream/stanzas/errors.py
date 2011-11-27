@@ -11,6 +11,7 @@
 
 import xml.etree.ElementTree as ET
 from pyfire.errors import XMPPProtocolError
+import pyfire.configuration as config
 
 
 class StanzaError(XMPPProtocolError):
@@ -24,9 +25,10 @@ class StanzaError(XMPPProtocolError):
                                 ""
                             )
         try:
-            self.element.set("id", request.get("id"))
+            if request.get("id") is not None:
+                self.element.set("id", request.get("id"))
             self.element.set("to", request.get("from"))
-            self.element.set("from", request.get("to"))
+            self.element.set("from", config.getlist('listeners', 'domains')[0])
         except KeyError:
             pass
         self.error = ET.Element("error")
