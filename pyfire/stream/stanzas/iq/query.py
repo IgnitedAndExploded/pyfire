@@ -19,10 +19,11 @@ from pyfire.storage import Session
 class Query(object):
     """Handles all iq-query xmpp frames"""
 
-    __slots__ = ('handler', 'request', 'response', 'session')
+    __slots__ = ('handler', 'request', 'response', 'sender')
 
-    def handle(self, request):
+    def handle(self, request, sender):
         self.request = request
+        self.sender = sender
         self.response = ET.Element("query")
 
         if request.get("xmlns") in self.handler:
@@ -33,7 +34,7 @@ class Query(object):
         """RFC6121 Section 2"""
 
         session = Session()
-        senderjid = JID(self.response.get("from"))
+        senderjid = JID(self.sender)
         roster = session.query(Roster).filter_by(jid=senderjid.bare).first()
         if roster is None:
             roster = Roster(jid=senderjid.bare)

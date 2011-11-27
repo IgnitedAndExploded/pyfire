@@ -77,7 +77,7 @@ class Iq(object):
     def query(self, request):
         """Implements the query command"""
         handler = Query()
-        return handler.handle(request)
+        return handler.handle(request, self.tree.get("from"))
 
     def ping(self, request):
         """A No-op for XEP-0199"""
