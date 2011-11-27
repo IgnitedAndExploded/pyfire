@@ -21,32 +21,37 @@ class Iq(object):
         super(Iq, self).__init__()
         self.from_jid = None
 
-    def handle(self, tree):
-        """<iq> handler, returns a response that should be sent back"""
-
-        self.from_jid = JID(tree.get("from"))
-
+    def create_response(self, content, iq_id=None):
+        """Set up an iq response"""
         # prepare result header
         iq = ET.Element("iq")
-        iq.set("id", tree.get("id"))
+        iq.set("id", iq_id or self.tree.get("id"))
         iq.set("type", "result")
-        if tree.get("to") is not None:
-            iq.set("from", tree.get("to"))
-        else:
-            iq.set("from", self.from_jid.domain)
-        iq.set("to", tree.get("from"))
+        iq.set("from", self.from_jid.domain)
+        iq.set("to", self.tree.get("from"))
+        iq.append(content)
+        return iq
+
+    def handle(self, tree):
+        """<iq> handler, returns one or more <iq> tags with results and new ones if required"""
+
+        self.from_jid = JID(tree.get("from"))
+        self.tree = tree
+
+        responses = []
         # dispatch to the handler for the given request query
         for req in list(tree):
-            if req.tag in self.handler:
-                data = self.handler[req.tag](self, req)
-                if data != None:
-                    iq.append(data)
-            else:
-                for elem in self.failure(req):
-                    iq.append(elem)
-                iq.set("type", "error")
+            if tree.get("type") == "get":
+                try:
+                    data = self.get_handler[req.tag](self, req)
+                    if data != None:
+                        responses.append(self.create_response(data))
+                except KeyError as e:
+                    for elem in self.failure(req):
+                        iq.append(elem)
+                    iq.set("type", "error")
         # return the result
-        return iq
+        return responses
 
     def bind(self, request):
         """Handles bind requests"""
@@ -90,7 +95,7 @@ class Iq(object):
         service.set("xmlns", "urn:ietf:params:xml:ns:xmpp-stanzas")
         return [requested_service, error]
 
-    handler = {
+    get_handler = {
       'bind': bind,
       'session': session,
       'query': query,
