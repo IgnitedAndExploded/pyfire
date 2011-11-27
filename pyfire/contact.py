@@ -14,8 +14,13 @@ from sqlalchemy import Table, Column, Boolean, Integer, String, Enum, ForeignKey
 from sqlalchemy.orm import relationship, backref
 
 from pyfire.jid import JID
-from pyfire.storage import Base
+from pyfire.storage import Base, JIDString
 
+
+contacts_groups = Table('contacts_groups', Base.metadata,
+    Column('contact_id', Integer, ForeignKey('contacts.id')),
+    Column('group_id', Integer, ForeignKey('groups.id'))
+)
 
 class Roster(Base):
     """List of contacts for a given jid"""
@@ -23,13 +28,10 @@ class Roster(Base):
     __tablename__ = 'rosters'
 
     id = Column(Integer, primary_key=True)
-    jid = Column(String(3072), nullable=False)
+    jid = Column(JIDString, nullable=False)
 
-
-contacts_groups = Table('contacts_groups', Base.metadata,
-    Column('contact_id', Integer, ForeignKey('contacts.id')),
-    Column('group_id', Integer, ForeignKey('groups.id'))
-)
+    def __init__(self, jid):
+        self.jid = JID(jid)
 
 
 class Group(Base):
@@ -52,7 +54,7 @@ class Contact(Base):
     id = Column(Integer, primary_key=True)
     approved = Column(Boolean)
     ask = Column(Enum('subscribe'))
-    jid = Column(String(3072), nullable=False)
+    jid = Column(JIDString, nullable=False)
     name = Column(String(255))
     subscription = Column(Enum("none", "from", "to", "remove", "both"))
     groups = relationship(Group, secondary=contacts_groups)
