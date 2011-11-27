@@ -78,7 +78,7 @@ class Contact(Base):
         self.ask = None
         self.name = None
         self.subscription = "none"
-        self.group = []
+        self.groups = []
 
         for k, v in kwds.iteritems():
             setattr(self, k, v)
@@ -96,7 +96,7 @@ class Contact(Base):
             element.set("name", self.name)
         if self.subscription is not None:
             element.set("subscription", self.subscription)
-        for group in self.group:
+        for group in self.groups:
             group_element = ET.SubElement(element, "group")
             group_element.text = group
         return element
@@ -120,5 +120,5 @@ class Contact(Base):
             cont.approved = approved
         for group in list(element):
             if group.tag == "group":
-                cont.group.append(group.text)
+                cont.groups.append(group.text)
         return cont
