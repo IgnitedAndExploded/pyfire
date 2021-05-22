@@ -10,7 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import cPickle
+import pickle
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 import xml.etree.ElementTree as ET
@@ -76,6 +76,6 @@ class StanzaProcessor(object):
                                 self.forwarder.send(cPickle.dumps(resp))
                         else:
                             self.forwarder.send(cPickle.dumps(response))
-                except StanzaError, e:
+                except (StanzaError, e):
                     # send caught errors back to sender
                     self.forwarder.send(cPickle.dumps(e.element))

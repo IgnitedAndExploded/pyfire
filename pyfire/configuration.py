@@ -9,10 +9,10 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import ConfigParser
+import configparser
 import os.path
 
-config = ConfigParser.SafeConfigParser()
+config = configparser.SafeConfigParser()
 
 config.add_section('database')
 config.set('database', 'dburi', 'sqlite:///pyfire.db')
@@ -42,5 +42,5 @@ def getlist(section, option, separator=','):
 # some handy shortcuts
 get = config.get
 getint = config.getint
-NoOptionError = ConfigParser.NoOptionError
+NoOptionError = configparser.NoOptionError
 set = config.set

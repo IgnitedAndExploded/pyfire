@@ -9,9 +9,9 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import cPickle
+import pickle
 import uuid
-from thread import allocate_lock
+from _thread import allocate_lock
 import xml.etree.ElementTree as ET
 
 import zmq
@@ -103,7 +103,7 @@ class TagHandler(object):
                     raise NotAuthorizedError
                 self.publish_stanza(tree)
 
-        except StreamError, e:
+        except(StreamError, e):
             self.send_string(unicode(e))
             self.connection.stop_connection()
 
