@@ -20,7 +20,7 @@ import errno
 import functools
 import contextlib
 import socket
-import thread
+import _thread
 
 from zmq.eventloop import ioloop
 
@@ -45,7 +45,7 @@ def start_client_listener():
         io_loop.start()
     except (KeyboardInterrupt, SystemExit):
         io_loop.stop()
-        print "exited cleanly"
+        print("exited cleanly")
 
 def fire_up():
     import pyfire.storage

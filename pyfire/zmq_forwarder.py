@@ -12,7 +12,7 @@
 
 import uuid
 import random
-import cPickle
+import pickle
 import zmq
 from zmq.eventloop import ioloop, zmqstream
 

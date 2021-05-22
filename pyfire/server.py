@@ -111,7 +111,7 @@ class XMPPServer(object):
         while True:
             try:
                 connection, address = self._sockets[fd].accept()
-            except socket.error, e:
+            except(socket.error, e):
                 if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
                     return
                 raise
@@ -121,7 +121,7 @@ class XMPPServer(object):
                 self._connections[address] = XMPPConnection(stream, address)
                 if not self.checker._running:
                     self.checker.start()
-            except Exception, e:
+            except (Exception, e):
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 log.error("Error in connection callback, %s" % str(e))
                 for line in traceback.format_tb(exc_traceback):

@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from thread import allocate_lock
+from _thread import allocate_lock
 
 from pyfire.auth.backends import InvalidAuthenticationError
 

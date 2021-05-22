@@ -19,7 +19,7 @@ from pyfire.storage import Session
 class Query(object):
     """Handles all iq-query xmpp frames"""
 
-    __slots__ = ('handler', 'request', 'response', 'sender')
+    __slots__ = ( 'request', 'response', 'sender')
 
     def handle(self, request, sender):
         self.request = request
