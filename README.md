@@ -1,12 +1,12 @@
-Pyfire XMPP Project
-===================
+Pyfire 2.0 XMPP Server Project
+===============================
 
 Having used some other implementations in the past, we decided to roll our own. Development just has begun, so don't expect anything fancy yet...
 
 Dependencies
 ============
 
-- Python 2.6 with ElementTree 1.3 or Python 2.7
+- Python 3.9 with ElementTree
 - Tornado
 - pyzmq (Python bindings for libzmq, ØMQ)
 - sqlalchemy
